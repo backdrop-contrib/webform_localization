@@ -250,6 +250,7 @@ function webform_localization_node_delete($node) {
   if (!in_array($node->type, webform_variable_get('webform_node_types'))) {
     return;
   }
+  module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
   // Deletion of webform and emails translatable properties
   webform_localization_delete_translate_strings($node);
   //Delete webform localization configuration record
@@ -278,7 +279,24 @@ function webform_localization_webform_display_component_alter(&$display_element,
   // Translate the translatable properties.
   if ($wl_options['expose_strings']) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+    // Load the options array for the translation process for the select component
+    $is_select=FALSE;
+    if ($display_element['#webform_component']['type']=='select') {
+      $display_element['#options']=_webform_select_options($component);
+      $is_select=TRUE;
+    }
     _webform_localization_translate_component($display_element, $component);
+    if ($is_select) {
+      // After translation we remove the option group strings for display
+      foreach ($display_element['#options'] as $k => $element) {
+        if (is_array($element)) {
+          foreach ($element as $key => $value) {
+           $display_element['#options'][$key]=$value;
+          }
+          unset($display_element['#options'][$k]);
+        }
+      }
+    }
   }
 }
 

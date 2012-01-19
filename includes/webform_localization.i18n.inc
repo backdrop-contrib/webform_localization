@@ -48,7 +48,6 @@ function _webform_localization_translate_component(&$element, $component) {
         // Remove the '#' from the begining of the property, for consistency.
         $property = drupal_substr($name_list[3], 1);
       }
-
       if (strpos($property, '-') !== FALSE) {
         // If property is array, we extract the key from the property.
         list ($property, $key) = explode('-', $property);
@@ -57,9 +56,26 @@ function _webform_localization_translate_component(&$element, $component) {
         }
       }
       else {
-        // Else we can treat the property as string.
-        if (isset($current_element['#' . $property])) {
-          $current_element['#' . $property] = webform_tt($name, $current_element['#' . $property]);
+        //If we are dealing with option groups
+        if (isset($name_list[4]) && strpos($name_list[4], '/-') !== FALSE) {
+          $option_group=str_replace('/-','',$name_list[4]);
+          // If it's a element
+          if (isset($name_list[5])) {
+            $current_element['#' . $property][$option_group][$name_list[5]]=webform_tt($name, $current_element['#' . $property][$option_group][$name_list[5]]);
+          }
+          else {
+            // If it's a option group we translate the key
+            $translated_option_group=webform_tt($name,$option_group);
+            if ($translated_option_group != $option_group) {
+             _array_key_replace($current_element['#' . $property],$option_group,$translated_option_group);
+            }
+          }
+        }
+        else {
+          // Else we can treat the property as string.
+          if (isset($current_element['#' . $property])) {
+            $current_element['#' . $property] = webform_tt($name, $current_element['#' . $property]);
+          }
         }
       }
     }
@@ -119,9 +135,23 @@ function _webform_localization_component_translation_parse($element, $component)
         if (is_array($element['#' . $key])) {
           // If the translatable property is an array, we translate the children.
           foreach ($element['#' . $key] as $elem_key => $elem_value) {
-            $name = implode(':', array('webform', $component['nid'], $component['cid'], $property . '-' . $elem_key));
-            $translated_properies[] = $name;
-            webform_tt($name, $elem_value, NULL, TRUE);
+             //If the child if an array, we translate the elements
+             if (is_array($elem_value)) {
+              foreach ($elem_value as $k => $v) {
+                $name = implode(':', array('webform', $component['nid'], $component['cid'],$property, '/-'.$elem_key.'/-', $k));
+                $translated_properies[] = $name;
+                webform_tt($name, $v, NULL, TRUE);
+              }
+              $name = implode(':', array('webform', $component['nid'], $component['cid'], $property, '/-'.$elem_key.'/-'));
+              $translated_properies[] = $name;
+              webform_tt($name, $elem_key, NULL, TRUE);
+             }
+             else {
+              //If the child is not an array
+              $name = implode(':', array('webform', $component['nid'], $component['cid'], $property . '-' . $elem_key));
+              $translated_properies[] = $name;
+              webform_tt($name, $elem_value, NULL, TRUE);
+             }
           }
         }
         else {
@@ -320,4 +350,13 @@ function webform_localization_delete_translate_strings($node) {
   foreach ($node->webform['emails'] as $eid => $value) {
     webform_localization_emails_delete_translation_string($eid, $node->nid);
   }
+}
+
+function _array_key_replace(&$array,$old_key,$new_key){
+  $keys = array_keys($array); 
+  $values = array_values($array); 
+  foreach ($keys as $k => $v) { 
+      if ($v == $old_key) { $keys[$k] = $new_key; } 
+  } 
+  $array= array_combine($keys, $values); 
 }
