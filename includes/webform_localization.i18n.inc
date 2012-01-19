@@ -4,7 +4,6 @@
  * @file
  * Webform Localization i18n_string integration.
  */
-
 /**
  * Provides interface with the i18n_string module.
  * Based in patch http://drupal.org/node/245424#comment-5244256
@@ -56,18 +55,18 @@ function _webform_localization_translate_component(&$element, $component) {
         }
       }
       else {
-        //If we are dealing with option groups
+        // If we are dealing with option groups
         if (isset($name_list[4]) && strpos($name_list[4], '/-') !== FALSE) {
-          $option_group=str_replace('/-','',$name_list[4]);
+          $option_group = str_replace('/-', '', $name_list[4]);
           // If it's a element
           if (isset($name_list[5])) {
-            $current_element['#' . $property][$option_group][$name_list[5]]=webform_tt($name, $current_element['#' . $property][$option_group][$name_list[5]]);
+            $current_element['#' . $property][$option_group][$name_list[5]] = webform_tt($name, $current_element['#' . $property][$option_group][$name_list[5]]);
           }
           else {
             // If it's a option group we translate the key
-            $translated_option_group=webform_tt($name,$option_group);
+            $translated_option_group = webform_tt($name, $option_group);
             if ($translated_option_group != $option_group) {
-             _array_key_replace($current_element['#' . $property],$option_group,$translated_option_group);
+              _array_key_replace($current_element['#' . $property], $option_group, $translated_option_group);
             }
           }
         }
@@ -135,23 +134,23 @@ function _webform_localization_component_translation_parse($element, $component)
         if (is_array($element['#' . $key])) {
           // If the translatable property is an array, we translate the children.
           foreach ($element['#' . $key] as $elem_key => $elem_value) {
-             //If the child if an array, we translate the elements
-             if (is_array($elem_value)) {
+            // If the child if an array, we translate the elements
+            if (is_array($elem_value)) {
               foreach ($elem_value as $k => $v) {
-                $name = implode(':', array('webform', $component['nid'], $component['cid'],$property, '/-'.$elem_key.'/-', $k));
+                $name = implode(':', array('webform', $component['nid'], $component['cid'], $property, '/-' . $elem_key . '/-', $k));
                 $translated_properies[] = $name;
                 webform_tt($name, $v, NULL, TRUE);
               }
-              $name = implode(':', array('webform', $component['nid'], $component['cid'], $property, '/-'.$elem_key.'/-'));
+              $name = implode(':', array('webform', $component['nid'], $component['cid'], $property, '/-' . $elem_key . '/-'));
               $translated_properies[] = $name;
               webform_tt($name, $elem_key, NULL, TRUE);
-             }
-             else {
-              //If the child is not an array
+            }
+            else {
+              // If the child is not an array
               $name = implode(':', array('webform', $component['nid'], $component['cid'], $property . '-' . $elem_key));
               $translated_properies[] = $name;
               webform_tt($name, $elem_value, NULL, TRUE);
-             }
+            }
           }
         }
         else {
@@ -352,11 +351,24 @@ function webform_localization_delete_translate_strings($node) {
   }
 }
 
-function _array_key_replace(&$array,$old_key,$new_key){
-  $keys = array_keys($array); 
-  $values = array_values($array); 
-  foreach ($keys as $k => $v) { 
-      if ($v == $old_key) { $keys[$k] = $new_key; } 
-  } 
-  $array= array_combine($keys, $values); 
+/**
+ * Helper function to replace an array key and its content
+ *
+ * @param $array
+ * Array To process
+ * @param $old_key
+ * Array key to be replaced
+ * @param $new_key
+ * The new array key
+ *
+ */
+function _array_key_replace(&$array, $old_key, $new_key) {
+  $keys = array_keys($array);
+  $values = array_values($array);
+  foreach ($keys as $k => $v) {
+    if ($v == $old_key) {
+      $keys[$k] = $new_key;
+    }
+  }
+  $array = array_combine($keys, $values);
 }
