@@ -27,8 +27,10 @@ function webform_localization_i18n_string_info() {
 }
 
 /**
- * Update / create / delete translation source for all the translatable
- * poperties of the components of the matching Webforms configuration
+ * Update / create / delete translation source for components
+ *
+ * Refresh callback that regenerates all the translatable poperties of the
+ * components of the matching webforms configuration
  */
 function webform_localization_i18n_string_refresh() {
   // Get components configured as translatable
@@ -253,7 +255,7 @@ function webform_localization_node_delete($node) {
   module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
   // Deletion of webform and emails translatable properties
   webform_localization_delete_translate_strings($node);
-  //Delete webform localization configuration record
+  // Delete webform localization configuration record
   db_delete('webform_localization')->condition('nid', $node->nid)->execute();
 }
 
@@ -302,6 +304,7 @@ function webform_localization_webform_display_component_alter(&$display_element,
 
 /**
  * Implements hook_form_FORM_ID_alter().
+ *
  * Add specific localization options to Webform Configure Form
  */
 function webform_localization_form_webform_configure_form_alter(&$form, &$form_state, $form_id) {
@@ -426,6 +429,7 @@ function _webform_localization_webform_configure_form_submit($form, &$form_state
 
 /**
  * Implements hook_form_FORM_ID_alter().
+ *
  * Add a Submit function to handle localization features
  */
 function webform_localization_form_webform_email_edit_form_alter(&$form, &$form_state, $form_id) {
@@ -449,6 +453,7 @@ function _webform_localization_webform_email_edit_form_submit($form, &$form_stat
 
 /**
  * Implements hook_form_FORM_ID_alter().
+ *
  * Add a Submit function to handle sync feature
  */
 function webform_localization_form_webform_email_delete_form_alter(&$form, &$form_state, $form_id) {
@@ -472,6 +477,7 @@ function _webform_localization_webform_email_delete_form_submit($form, &$form_st
 
 /**
  * Implements hook_form_FORM_ID_alter().
+ *
  * Add specific localization options to Webform Component Edit Form
  */
 function webform_localization_form_webform_component_edit_form_alter(&$form, &$form_state, $form_id) {
@@ -564,13 +570,13 @@ function webform_localization_field_attach_prepare_translation_alter(&$entity, $
  * Gets webform localization options that match a node ID.
  *
  * @staticvar array $webform_localization_options
- * An array of webform localization options group by nid.
+ *   An array of webform localization options group by nid.
  * @param $nid
- * A node Id.
+ *   A node Id.
  * @param boolean $clear_cache
- * A flag to force a database reading in case that properties are cached
+ *   A flag to force a database reading in case that properties are cached
  * @return array
- * Webform localization options that match the nid.
+ *   Webform localization options that match the nid.
  */
 function _get_webform_localization_config($nid, $clear_cache = FALSE) {
   static $webform_localization_options = array();
@@ -617,8 +623,9 @@ function _get_webform_localization_config($nid, $clear_cache = FALSE) {
 }
 
 /**
- * Global switch to enable / disable syncing and check whether
- * we are synching at the moment
+ * Global switch to enable / disable syncing
+ * 
+ * This function also check whether we are synching at the moment.
  *
  * @return boolean
  *   TRUE if we need to run sync operations. FALSE during syncing
