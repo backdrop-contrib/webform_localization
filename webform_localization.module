@@ -415,8 +415,7 @@ function _webform_localization_webform_configure_form_submit($form, &$form_state
   else
     $webform_properties=serialize($webform_properties);
   if ($form_state['values']['single_webform'] > 0) {
-    $node = node_load($form_state['values']['nid']);
-    $form_state['values']['single_webform'] = $node->tnid;
+    $form_state['values']['single_webform'] = $form_state['values']['nid'];
   }
   $webform_localization_options = array(
     'nid' => $form_state['values']['nid'],
