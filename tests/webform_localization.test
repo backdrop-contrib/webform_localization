@@ -37,7 +37,8 @@ class WebformLocalizationTestCase extends DrupalWebTestCase {
           'edit any webform content',
           'access all webform results',
           'edit all webform submissions',
-          'delete all webform submissions'));
+          'delete all webform submissions',
+          'translate interface'));
 
     $this->translator = $this->drupalCreateUser(array('translate content',
           'create webform content',
@@ -102,6 +103,8 @@ class WebformLocalizationTestCase extends DrupalWebTestCase {
     $edit['single_webform'] = TRUE;
     $this->drupalPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
     $this->assertRaw(t('The form settings have been updated.'), t('Webform string translation and single webform enabled.'));
+    
+    // Checks for webform components in the spanish node
     $this->drupalGet('es/node/' . $node_translation1->nid);
     foreach ($node->webform['components'] as $key => $value) {
       if ($value['name'] == 'Hidden') {
@@ -110,6 +113,8 @@ class WebformLocalizationTestCase extends DrupalWebTestCase {
       }
       $this->assertRaw($value['name'], t('The %c webform component is present.', array('%c' => $value['name'])), 'Spanish Webform translation');
     }
+    
+    // Checks for webform components in the german node
     $this->drupalGet('de/node/' . $node_translation2->nid);
     foreach ($node->webform['components'] as $key => $value) {
       if ($value['name'] == 'Hidden') {
@@ -118,6 +123,17 @@ class WebformLocalizationTestCase extends DrupalWebTestCase {
       }
       $this->assertRaw($value['name'], t('The %c webform component is present.', array('%c' => $value['name'])), 'German Webform translation');
     }
+    
+    // Refresh webform strings
+    $edit = array();
+    $edit['groups[webform]'] = 'webform';
+    $this->drupalPost('admin/config/regional/translate/i18n_string', $edit, t('Refresh strings'));
+    
+    // Checks if the webform strings are exposed to translation
+    $edit = array();
+    $edit['group'] = 'webform';
+    $this->drupalPost('admin/config/regional/translate/translate', $edit, t('Filter'));
+    
   }
 
   /**
