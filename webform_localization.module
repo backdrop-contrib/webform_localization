@@ -280,9 +280,9 @@ function webform_localization_node_delete($node) {
 }
 
 /**
- * Implements hook_webform_render_component_alter().
+ * Implements hook_webform_component_render_alter().
  */
-function webform_localization_webform_render_component_alter(&$element, $component) {
+function webform_localization_webform_component_render_alter(&$element, $component) {
   // Gets webform localization options that match this node ID.
   $wl_options = _get_webform_localization_config($component['nid']);
   // Translate the translatable properties.
@@ -293,32 +293,15 @@ function webform_localization_webform_render_component_alter(&$element, $compone
 }
 
 /**
- * Implements hook_webform_display_component_alter().
+ * Implements hook_webform_component_display_alter().
  */
-function webform_localization_webform_display_component_alter(&$display_element, $component) {
+function webform_localization_webform_component_display_alter(&$display_element, $component) {
   // Gets webform localization options that match this node ID.
   $wl_options = _get_webform_localization_config($component['nid']);
   // Translate the translatable properties.
   if ($wl_options['expose_strings']) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
-    // Load the options array for the translation process for the select component
-    $is_select=FALSE;
-    if ($display_element['#webform_component']['type']=='select') {
-      $display_element['#options']=_webform_select_options($component);
-      $is_select=TRUE;
-    }
     _webform_localization_translate_component($display_element, $component);
-    if ($is_select) {
-      // After translation we remove the option group strings for display
-      foreach ($display_element['#options'] as $k => $element) {
-        if (is_array($element)) {
-          foreach ($element as $key => $value) {
-           $display_element['#options'][$key]=$value;
-          }
-          unset($display_element['#options'][$k]);
-        }
-      }
-    }
   }
 }
 
