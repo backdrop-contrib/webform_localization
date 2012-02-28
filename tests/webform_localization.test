@@ -103,8 +103,8 @@ class WebformLocalizationTestCase extends DrupalWebTestCase {
     $edit['single_webform'] = TRUE;
     $this->drupalPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
     $this->assertRaw(t('The form settings have been updated.'), t('Webform string translation and single webform enabled.'));
-    
-    // Checks for webform components in the spanish node
+
+    // Checks for webform components in the Spanish node
     $this->drupalGet('es/node/' . $node_translation1->nid);
     foreach ($node->webform['components'] as $key => $value) {
       if ($value['name'] == 'Hidden') {
@@ -113,27 +113,54 @@ class WebformLocalizationTestCase extends DrupalWebTestCase {
       }
       $this->assertRaw($value['name'], t('The %c webform component is present.', array('%c' => $value['name'])), 'Spanish Webform translation');
     }
-    
-    // Checks for webform components in the german node
+
+    // Checks for webform components in the Deutsch node
     $this->drupalGet('de/node/' . $node_translation2->nid);
     foreach ($node->webform['components'] as $key => $value) {
       if ($value['name'] == 'Hidden') {
         $this->assertNoRaw($value['name'], t('The %c webform component is not present.', array('%c' => $value['name'])), 'German Webform translation');
         CONTINUE;
       }
-      $this->assertRaw($value['name'], t('The %c webform component is present.', array('%c' => $value['name'])), 'German Webform translation');
+      $this->assertRaw($value['name'], t('The %c webform component is present.', array('%c' => $value['name'])), 'Deutsch Webform translation');
     }
-    
+
     // Refresh webform strings
     $edit = array();
     $edit['groups[webform]'] = 'webform';
     $this->drupalPost('admin/config/regional/translate/i18n_string', $edit, t('Refresh strings'));
-    
-    // Checks if the webform strings are exposed to translation
-    $edit = array();
-    $edit['group'] = 'webform';
-    $this->drupalPost('admin/config/regional/translate/translate', $edit, t('Filter'));
-    
+
+    // Select webform localization options that match this node ID.
+    $options = db_select('locales_source')
+            ->fields('locales_source')
+            ->condition('textgroup', 'webform', '=')
+            ->execute()
+            ->fetchAllAssoc('lid', PDO::FETCH_ASSOC);
+
+    // $refresh_node = node_load($node->nid,$node->vid, TRUE);
+    // Translates webform components
+    $translations = array();
+    foreach ($options as $key => $value) {
+      $name = $value['source'];
+      $translations['de'] = 'de:' . $name;
+      $translations['es'] = 'es:' . $name;
+      $this->createStringTranslation('webform', $name, $translations);
+    }
+    $this->drupalGet('es/node/' . $node_translation1->nid);
+    foreach ($options as $key => $value) {
+      $name = $value['source'];
+      $translation = 'es:' . $name;
+      $this->assertRaw($translation, t('%c translation is present.', array('%c' => $name)), 'Spanish Webform translation');
+    }
+    $this->drupalGet('de/node/' . $node_translation2->nid);
+    foreach ($options as $key => $value) {
+      $name = $value['source'];
+      $translation = 'de:' . $name;
+      $this->assertRaw($translation, t('%c translation is present.', array('%c' => $name)), 'Deutsch Webform translation');
+    }
+    /**
+     * @todo
+     * Pending to Fix deveral fails and exceptions
+     */
   }
 
   /**
@@ -269,6 +296,80 @@ class WebformLocalizationTestCase extends DrupalWebTestCase {
     $this->assertTrue($translation->tnid == $node->nid, t('Translation set id correctly stored.'));
 
     return $translation;
+  }
+
+  /**
+   * Create translation for string in textgroup
+   *
+   * @param $translations
+   *   Optional array of langcode => translation. If not present, it will be generated.
+   */
+  function createStringTranslation($textgroup, $name, $translations = NULL) {
+    // Generate translations if not found, they will be the same length as source string
+    if (!$translations) {
+      $length = strlen($name);
+      foreach ($this->getOtherLanguages() as $language) {
+        $translations[$language->language] = $this->randomName($length);
+      }
+    }
+    //$this->drupalLogin($this->translator);
+    // This is the language indicator on the translation search screen for
+    // untranslated strings. Copied straight from locale.inc.
+    $language_indicator = "<em class=\"locale-untranslated\">";
+    // Search for the name and translate it.
+    $search = array(
+      'string' => $name,
+      'language' => 'all',
+      'translation' => 'untranslated',
+      'group' => $textgroup,
+    );
+    $this->drupalPost('admin/config/regional/translate/translate', $search, t('Filter'));
+    // assertText() seems to remove the input field where $name always could be
+    // found, so this is not a false assert. See how assertNoText succeeds
+    // later.
+    //$this->assertNoUniqueText();
+    $this->assertText(check_plain($name), t('Search found the name.'));
+    $this->assertRaw($language_indicator, t('Name is untranslated.'));
+
+    // Is not always the only result, iif there is more than one click the first.
+    if ($this->countString(check_plain($name)) > 1) {
+      $this->clickLink(t('edit'), 0);
+    }
+    else
+      $this->clickLink(t('edit'));
+
+    // We save the lid from the path.
+    $matches = array();
+    preg_match('!admin/config/regional/translate/edit/(\d+)!', $this->getUrl(), $matches);
+    $lid = $matches[1];
+    // No t() here, it's surely not translated yet.
+    $this->assertRaw(check_plain($name), t($name . ' name found on edit screen.'));
+    foreach ($translations as $langcode => $translation) {
+      $edit["translations[$langcode]"] = $translation;
+    }
+    $this->drupalPost(NULL, $edit, t('Save translations'));
+    $this->assertText(t('The string has been saved.'), t('The string has been saved.'));
+    $this->assertEqual($this->getUrl(), url('admin/config/regional/translate/translate', array('absolute' => TRUE)), t('Correct page redirection.'));
+    $this->drupalPost('admin/config/regional/translate/translate', $search, t('Filter'));
+    // The indicator should not be here.
+    //$this->assertNoRaw($language_indicator, t('String is translated.'));
+    return $translations;
+  }
+
+  /**
+   * Get all languages that are not default
+   */
+  public function getOtherLanguages() {
+    $languages = language_list();
+    unset($languages[language_default('language')]);
+    return $languages;
+  }
+
+  public function countString($string) {
+    if ($this->plainTextContent === FALSE) {
+      $this->plainTextContent = filter_xss($this->drupalGetContent(), array());
+    }
+    return substr_count($this->plainTextContent, $string);
   }
 
 }
