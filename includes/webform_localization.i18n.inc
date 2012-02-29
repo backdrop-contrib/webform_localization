@@ -105,7 +105,7 @@ function webform_localization_component_update_translation_strings(&$component) 
     $element = webform_component_invoke($component['type'], 'display', $component, NULL, 'html');
     // Parse the renderable array to find the translatable properties and
     // update / create translation source for them
-    $component['extra']['translated_strings'] = array_merge($component['extra']['translated_strings'], _webform_localization_component_translation_parse($element, $component));
+    $component['extra']['translated_strings'] = array_merge($component['extra']['translated_strings'], array_diff(_webform_localization_component_translation_parse($element, $component), $component['extra']['translated_strings']));
   }
 }
 
@@ -124,7 +124,6 @@ function webform_localization_component_update_translation_strings(&$component) 
  */
 function _webform_localization_component_translation_parse($element, $component) {
   $translated_properies = array();
-
   if (!isset($element['#parents'])) {
     $element['#parents'] = array();
   }
