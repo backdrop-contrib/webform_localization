@@ -7,10 +7,11 @@ ways to manage translation of forms and questionnaires.
 You can choose two different ways to manage localization that cover this
 scenarios:
 
-A) If you want to keep a single webform across all nodes in a translation set:
+A) If you want to keep a single webform across all nodes in a translation set or
+you are using field translation:
 Use i18n_string integration to translate webform strings. This module expose
 webform properties, components and emails strings through the i18n module. All
-submissions results are related to the original node only.
+submissions results are related to the source node only.
 (You have a "localization by string translation" fieldset in the form settings
 to enable this)
 
@@ -75,3 +76,39 @@ Configuration -> Translate interface -> Translate
 (admin/config/regional/translate/translate)
 Here you can filter the strings available for translation by "webform" text
 group.
+
+
+
+Example B: Manage localization for node/1 using translation by sync
+------------------------------------------------------------------
+
+0. Create all webform components in the node/1 webform.
+
+1. Go to the webform admin section for that node at node/1/webform.
+
+2. Go to the Webform Form settings at node/1/webform/configure.
+
+3. In the "localization by sync" fieldset enable the webform properties
+checkboxes in "Synchronize webform properties across node translations.". Choose
+what properties you will need to keep synchronize in all webforms across a
+translation set.
+
+4. In the "localization by sync" fieldset enable the "Synchronize webform
+components across node translations." checkbox. This will clone the entire
+webform when you create a translation and will enable specific options per
+component for you to synchronize properties.
+
+5. In the "localization by sync" fieldset enable the "Synchronize webform
+submission access roles across node translations." checkbox. This will keep the
+roles changes synchronize in all webforms across a translation set.
+    
+6. In the "localization by sync" fieldset enable the "Synchronize webform e-mail
+recipients across node translations." checkbox. This will keep all email changes
+synchronize in all webforms across a translation set.
+
+7. Create a translation for node/1 at node/1/translate. You will notice that the
+new language node will had a new webform instance with the original structure
+from the source node.
+Now you we will have to translate all pertinent texts in the webform and
+components. All properties changes in the source webform will be synchronized in
+all translates nodes as you have specified in the  previous steps.
