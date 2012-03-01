@@ -19,7 +19,10 @@ function webform_localization_help($section = 'admin/help#webform_localization',
   $output = '';
   switch ($section) {
     case 'admin/help#webform_localization':
-      $output = t('<p>The Webform Localization module provides multilingual features to the Webform Module. Special options in the webform and component configuration let you enable different ways to manage translation of forms and questionnaires.</p><p>You can choose two different ways to manage localization that cover this scenarios:</p><p>A) <strong>If you want to keep a single webform across all nodes in a translation set:</strong><br>Use i18n_string integration to translate webform strings. This module expose webform properties, components and emails strings through the i18n module. All submissions results are related to the original node only.<br>(You have a "<em>localization by string translation</em>" fieldset in the form settings to enable this)</p><p>B)<strong> If you want to keep a webform per node per language but synchronized:</strong><br>The entire webform structure is replicated when a translated node is created then you can customize it at will. You can add specific options or components per language and choose to keep sync: webform properties, components properties, roles and emails recipients. In this scenario make no sense of having results attached to one node since each webform could have a different structure with only a few components in sync.<br>(You have a "<em>localization by sync</em>" fieldset in the form settings to enable this)</p>');
+      $output = '<p>' . t('The Webform Localization module provides multilingual features to the Webform Module. Special options in the webform and component configuration let you enable different ways to manage translation of forms and questionnaires.') . '</p>';
+      $output .= '<p>' . t('You can choose two different ways to manage localization that cover this scenarios:') . '</p>';
+      $output .= '<p>' . t('A) <strong>If you want to keep a single webform across all nodes in a translation set:</strong><br>Use i18n_string integration to translate webform strings. This module expose webform properties, components and emails strings through the i18n module. All submissions results are related to the original node only.<br>(You have a "<em>localization by string translation</em>" fieldset in the form settings to enable this)') . '</p>';
+      $output .= '<p>' . t('B)<strong> If you want to keep a webform per node per language but synchronized:</strong><br>The entire webform structure is replicated when a translated node is created then you can customize it at will. You can add specific options or components per language and choose to keep sync: webform properties, components properties, roles and emails recipients. In this scenario make no sense of having results attached to one node since each webform could have a different structure with only a few components in sync.<br>(You have a "<em>localization by sync</em>" fieldset in the form settings to enable this)') . '</p>';
       break;
   }
   return $output;
@@ -316,19 +319,19 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#weight' => -6,
-    '#description' => t('<p>This feature implements an i18n_string integration and let you keep a single webform across several nodes in a translation set.This feature is useful when you want <em>one single webform / node acrossdifferent languages</em>.</p>', array('html' => TRUE)),
+    '#description' => '<p>' . t('This feature implements an i18n_string integration and let you keep a single webform across several nodes in a translation set.This feature is useful when you want <em>one single webform / node acrossdifferent languages</em>.', array('html' => TRUE)) . '</p>',
   );
   $form['localization_by_string']['expose_strings'] = array(
     '#type' => 'checkbox',
     '#title' => t('Expose webform component strings suitable for translation.'),
     '#default_value' => $webform_localization_options['expose_strings'],
-    '#description' => t('<p>Use the i18n module to translate webform component strings.</p>', array('html' => TRUE)),
+    '#description' => '<p>' . t('Use the i18n module to translate webform component strings.', array('html' => TRUE)) . '</p>',
   );
   $form['localization_by_string']['single_webform'] = array(
     '#type' => 'checkbox',
     '#title' => t('Keep a single webform across a translation set.'),
     '#default_value' => $single_webform,
-    '#description' => t('<p>When you use the i18n module to translate webform component strings, you may like to keep a single webform to attach on each node from a translation set.</p>', array('html' => TRUE)),
+    '#description' => '<p>' . t('When you use the i18n module to translate webform component strings, you may like to keep a single webform to attach on each node from a translation set.', array('html' => TRUE)) . '</p>',
   );
   $form['localization_by_sync'] = array(
     '#type' => 'fieldset',
@@ -336,12 +339,12 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#weight' => -5,
-    '#description' => t('<p>This feature let you have a webform per language and keeping all of them synchronized at different levels.You can choose to synchronize webform properties, submission roles, e-mail recipients and component properties.This feature is useful when you want <em>a different webform /node per language</em> but keeping some settings synchronized.</p>', array('html' => TRUE)),
+    '#description' => '<p>' . t('This feature let you have a webform per language and keeping all of them synchronized at different levels.You can choose to synchronize webform properties, submission roles, e-mail recipients and component properties.This feature is useful when you want <em>a different webform /node per language</em> but keeping some settings synchronized.', array('html' => TRUE)) . '</p>',
   );
   $form['localization_by_sync']['webform_properties_header'] = array(
     '#type' => 'markup',
     '#prefix' => t('Synchronize webform properties across node translations.'),
-    '#markup' => t('<div class="description"><p>You can choose to synchronize specific properties of the webform.</p></div>', array('html' => TRUE))
+    '#markup' => '<div class="description"><p>' . t('You can choose to synchronize specific properties of the webform.') . '</p></div>',
   );
   $form['localization_by_sync']['webform_properties'] = array(
     '#type' => 'checkboxes',
@@ -353,19 +356,19 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
     '#type' => 'checkbox',
     '#title' => t('Synchronize webform components across node translations.'),
     '#default_value' => $webform_localization_options['sync_components'],
-    '#description' => t('<p>Copy the entire webform structure when a node is translatedand synchronize changes on selected components properties.</p>', array('html' => TRUE)),
+    '#description' => '<p>' . t('Copy the entire webform structure when a node is translatedand synchronize changes on selected components properties.', array('html' => TRUE)) . '</p>',
   );
   $form['localization_by_sync']['sync_roles'] = array(
     '#type' => 'checkbox',
     '#title' => t('Synchronize webform submission access roles across node translations.'),
     '#default_value' => $webform_localization_options['sync_roles'],
-    '#description' => t('<p>Keep the roles that can submit a webform synchronized in a translation set.</p>', array('html' => TRUE)),
+    '#description' => '<p>' . t('Keep the roles that can submit a webform synchronized in a translation set.') . '</p>',
   );
   $form['localization_by_sync']['sync_emails'] = array(
     '#type' => 'checkbox',
     '#title' => t('Synchronize webform e-mail recipients across node translations.'),
     '#default_value' => $webform_localization_options['sync_emails'],
-    '#description' => t('<p>Keep the webform e-mail recipients synchronized in a translation set.</p>', array('html' => TRUE)),
+    '#description' => '<p>' . t('Keep the webform e-mail recipients synchronized in a translation set.') . '</p>',
   );
   $form['#submit'][] = '_webform_localization_webform_configure_form_submit';
 }
@@ -527,7 +530,7 @@ function _webform_localization_webform_component_edit_form_submit($form, &$form_
   if (isset($prev_options['no_persistent'])) {
     drupal_write_record('webform_component_localization', $options);
   }
-  else{
+  else {
     drupal_write_record('webform_component_localization', $options, array('nid', 'cid'));
   }
   // We reload cached configuration for this component
