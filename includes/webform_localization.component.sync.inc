@@ -15,7 +15,7 @@
  * Get an array with translated versions of a component
  *
  * This array is later used to run sync operations on components.
- * 
+ *
  * @staticvar array $component_translations
  *   An array of webform components for each tnid
  * @param array $component

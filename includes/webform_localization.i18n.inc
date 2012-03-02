@@ -15,12 +15,12 @@
 
 /**
  * Translates the component properties that are translatable.
- * 
+ *
  * These are found in under 'translated_strings' in the 'extra' array of the
  * component, which is build when the component is inserted / updated, or
  * when all webform strings are updated from
  * admin/config/regional/translate/i18n_string.
- * 
+ *
  * @param array $element
  *   The FAPI renderable array of the component instance.
  * @param array $component
@@ -70,7 +70,7 @@ function _webform_localization_translate_component(&$element, $component) {
             // If it's a option group we translate the key
             $translated_option_group = webform_tt($name, $option_group);
             if ($translated_option_group != $option_group) {
-              _array_key_replace($current_element['#' . $property], $option_group, $translated_option_group);
+              _webform_localization_array_key_replace($current_element['#' . $property], $option_group, $translated_option_group);
             }
           }
         }
@@ -111,7 +111,7 @@ function webform_localization_component_update_translation_strings(&$component) 
 
 /**
  * Parse a component renderable array to find the translatable properties.
- * 
+ *
  * Create / update or remove translation source for translatable properties
  * of a webform component.
  *
@@ -371,7 +371,7 @@ function webform_localization_delete_translate_strings($node) {
  *   The new array key
  *
  */
-function _array_key_replace(&$array, $old_key, $new_key) {
+function _webform_localization_array_key_replace(&$array, $old_key, $new_key) {
   $keys = array_keys($array);
   $values = array_values($array);
   foreach ($keys as $k => $v) {
