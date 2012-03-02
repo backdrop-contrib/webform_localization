@@ -46,7 +46,7 @@ settings". See examples below.
 Example A: Manage localization for node/1 using string translation
 ------------------------------------------------------------------
 
-1. Go to the webform admin section for that node at node/1/webform.
+1. Go to the Webform tab for that node at node/1/webform.
 
 2. Go to the Webform Form settings at node/1/webform/configure.
 
@@ -84,7 +84,7 @@ Example B: Manage localization for node/1 using translation by sync
 
 0. Create all webform components in the node/1 webform.
 
-1. Go to the webform admin section for that node at node/1/webform.
+1. Go to the Webform tab for that node at node/1/webform.
 
 2. Go to the Webform Form settings at node/1/webform/configure.
 
