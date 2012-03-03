@@ -92,21 +92,19 @@ function _webform_localization_translate_component(&$element, $component) {
  *   A webform component
  */
 function webform_localization_component_update_translation_strings(&$component) {
-  if (module_exists('i18n_string')) {
-    // Fill in the the default values for the missing properties.
-    module_load_include('inc', 'webform', 'includes/webform.components');
-    webform_component_defaults($component);
-    // Render the 'render' FAPI array for the component.
-    $element = webform_component_invoke($component['type'], 'render', $component, NULL, 'html');
-    // Parse the renderable array to find the translatable properties and
-    // update / create translation source for them
-    $component['extra']['translated_strings'] = _webform_localization_component_translation_parse($element, $component);
-    // Render the 'display' FAPI array for the component.
-    $element = webform_component_invoke($component['type'], 'display', $component, NULL, 'html');
-    // Parse the renderable array to find the translatable properties and
-    // update / create translation source for them
-    $component['extra']['translated_strings'] = array_merge($component['extra']['translated_strings'], array_diff(_webform_localization_component_translation_parse($element, $component), $component['extra']['translated_strings']));
-  }
+  // Fill in the the default values for the missing properties.
+  module_load_include('inc', 'webform', 'includes/webform.components');
+  webform_component_defaults($component);
+  // Render the 'render' FAPI array for the component.
+  $element = webform_component_invoke($component['type'], 'render', $component, NULL, 'html');
+  // Parse the renderable array to find the translatable properties and
+  // update / create translation source for them
+  $component['extra']['translated_strings'] = _webform_localization_component_translation_parse($element, $component);
+  // Render the 'display' FAPI array for the component.
+  $element = webform_component_invoke($component['type'], 'display', $component, NULL, 'html');
+  // Parse the renderable array to find the translatable properties and
+  // update / create translation source for them
+  $component['extra']['translated_strings'] = array_merge($component['extra']['translated_strings'], array_diff(_webform_localization_component_translation_parse($element, $component), $component['extra']['translated_strings']));
 }
 
 /**
@@ -213,11 +211,9 @@ function webform_localization_delete_all_strings() {
  *   A webform component array
  */
 function webform_localization_component_delete_translation_strings($component) {
-  if (module_exists('i18n_string')) {
-    if (isset($component['extra']['translated_strings'])) {
-      foreach ($component['extra']['translated_strings'] as $name) {
-        i18n_string_remove($name);
-      }
+  if (isset($component['extra']['translated_strings'])) {
+    foreach ($component['extra']['translated_strings'] as $name) {
+      i18n_string_remove($name);
     }
   }
 }
@@ -229,15 +225,13 @@ function webform_localization_component_delete_translation_strings($component) {
  *   The form_state values that have been saved.
  */
 function webform_localization_update_translation_strings($properties) {
-  if (module_exists('i18n_string')) {
-    if (!empty($properties['confirmation']['value'])) {
-      $name = implode(':', array('webform', $properties['nid'], 'confirmation'));
-      webform_tt($name, $properties['confirmation']['value'], NULL, TRUE);
-    }
-    if (!empty($properties['submit_text'])) {
-      $name = implode(':', array('webform', $properties['nid'], 'submit_text'));
-      webform_tt($name, $properties['submit_text'], NULL, TRUE);
-    }
+  if (!empty($properties['confirmation']['value'])) {
+    $name = implode(':', array('webform', $properties['nid'], 'confirmation'));
+    webform_tt($name, $properties['confirmation']['value'], NULL, TRUE);
+  }
+  if (!empty($properties['submit_text'])) {
+    $name = implode(':', array('webform', $properties['nid'], 'submit_text'));
+    webform_tt($name, $properties['submit_text'], NULL, TRUE);
   }
 }
 
