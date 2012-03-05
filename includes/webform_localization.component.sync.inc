@@ -22,7 +22,7 @@
  *   A webform component array.
  * @return
  *   An array of webform components that match a tnid.
- *   
+ *
  */
 function webform_localization_component_get_translations($component) {
   static $component_translations = array();
@@ -176,7 +176,7 @@ function webform_localization_synchronizable_properties_delete($component) {
  *   A webform component Id.
  * @return
  *   A webform component array.
- *   
+ *
  */
 function webform_localization_component_load($nid, $cid) {
   $component = db_select('webform_component')

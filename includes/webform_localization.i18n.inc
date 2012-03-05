@@ -61,7 +61,7 @@ function _webform_localization_translate_component(&$element, $component) {
         // If we are dealing with option groups.
         if (isset($name_list[4]) && strpos($name_list[4], '/-') !== FALSE) {
           $option_group = str_replace('/-', '', $name_list[4]);
-          // If it's a element
+          // If it's a element.
           if (isset($name_list[5])) {
             $current_element['#' . $property][$option_group][$name_list[5]] = webform_tt($name, $current_element['#' . $property][$option_group][$name_list[5]]);
           }
@@ -88,7 +88,7 @@ function _webform_localization_translate_component(&$element, $component) {
  * Update / create translation source for all the translatable poperties.
  *
  * @param array $component
- *   A webform component
+ *   A webform component.
  */
 function webform_localization_component_update_translation_strings(&$component) {
   // Fill in the the default values for the missing properties.
@@ -118,7 +118,7 @@ function webform_localization_component_update_translation_strings(&$component) 
  *   The component which was rendered.
  * @return
  *   An array of translatabled webform properties.
- *   
+ *
  */
 function _webform_localization_component_translation_parse($element, $component) {
   $translated_properies = array();
@@ -188,7 +188,9 @@ function _webform_localization_component_translation_parse($element, $component)
     $element[$child]['#parents'] = $element['#parents'];
     $element[$child]['#parents'][] = $child;
     // Add the translated propertied to the list.
-    $translated_properies = array_merge($translated_properies, _webform_localization_component_translation_parse($element[$child], $component));
+    $translated_properies = array_merge(
+            $translated_properies,
+            _webform_localization_component_translation_parse($element[$child], $component));
   }
 
   return $translated_properies;
@@ -220,7 +222,7 @@ function webform_localization_delete_all_strings() {
  * Remove translation source for all the translatable poperties.
  *
  * @param array $component
- *   A webform component array
+ *   A webform component array.
  */
 function webform_localization_component_delete_translation_strings($component) {
   if (isset($component['extra']['translated_strings'])) {
@@ -251,20 +253,23 @@ function webform_localization_update_translation_strings($properties) {
  * Translate general webform poperties.
  *
  * @param $node
- *   A node object
+ *   A node object.
  */
 function webform_localization_translate_strings(&$node) {
   $name = implode(':', array('webform',
-                             $node->webform['nid'],
-                             'confirmation'));
-  $node->webform['confirmation'] = webform_tt($name,
-                                              $node->webform['confirmation']);
-  $name = implode(':',
-                  array('webform',
-                        $node->webform['nid'],
-                        'submit_text'));
+        $node->webform['nid'],
+        'confirmation'));
+  $node->webform['confirmation'] = webform_tt(
+          $name,
+          $node->webform['confirmation']);
+  $name = implode(
+          ':',
+          array(
+            'webform',
+            $node->webform['nid'],
+            'submit_text'));
   $node->webform['submit_text'] = webform_tt($name,
-                                             $node->webform['submit_text']);
+          $node->webform['submit_text']);
 }
 
 /**
@@ -278,19 +283,19 @@ function webform_localization_emails_update_translation_string($properties) {
   $eid = $properties['eid'];
   if (!empty($properties['subject_custom'])) {
     $name = implode(':',
-                    array('webform',
-                          $nid,
-                          'email',
-                          $eid,
-                          'subject_custom'));
+            array('webform',
+              $nid,
+              'email',
+              $eid,
+              'subject_custom'));
     webform_tt($name, $properties['subject_custom'], NULL, TRUE);
   }
   if (!empty($properties['from_name_custom'])) {
     $name = implode(':', array('webform',
-                               $nid,
-                               'email',
-                               $eid,
-                               'from_name_custom'));
+          $nid,
+          'email',
+          $eid,
+          'from_name_custom'));
     webform_tt($name, $properties['from_name_custom'], NULL, TRUE);
   }
   if (!empty($properties['template'])) {
@@ -303,27 +308,27 @@ function webform_localization_emails_update_translation_string($properties) {
  * Update / create translation source for webform email poperties.
  *
  * @param $emails
- *   An array of webform emails
+ *   An array of webform emails.
  * @param $nid
- *   The node Id of the webform
+ *   The node Id of the webform.
  */
 function webform_localization_emails_translation_string_refresh($emails, $nid) {
   foreach ($emails as $email) {
     $eid = $email['eid'];
     if (!empty($email['subject']) && $email['subject'] != 'default') {
       $name = implode(':', array('webform',
-                                 $nid,
-                                 'email',
-                                 $eid,
-                                 'subject_custom'));
+            $nid,
+            'email',
+            $eid,
+            'subject_custom'));
       webform_tt($name, $email['subject'], NULL, TRUE);
     }
     if (!empty($email['from_name']) && $email['from_name'] != 'default') {
       $name = implode(':', array('webform',
-                                 $nid,
-                                 'email',
-                                 $eid,
-                                 'from_name_custom'));
+            $nid,
+            'email',
+            $eid,
+            'from_name_custom'));
       webform_tt($name, $email['from_name'], NULL, TRUE);
     }
     if (!empty($email['template']) && $email['template'] != 'default') {
@@ -344,18 +349,18 @@ function webform_localization_email_translate_strings(&$node) {
   foreach ($node->webform['emails'] as $eid => &$email) {
     if (!empty($email['subject']) && $email['subject'] != 'default') {
       $name = implode(':', array('webform',
-                                 $nid,
-                                 'email',
-                                 $eid,
-                                 'subject_custom'));
+            $nid,
+            'email',
+            $eid,
+            'subject_custom'));
       $email['subject'] = webform_tt($name, $email['subject']);
     }
     if (!empty($email['from_name']) && $email['from_name'] != 'default') {
       $name = implode(':', array('webform',
-                                 $nid,
-                                 'email',
-                                 $eid,
-                                 'from_name_custom'));
+            $nid,
+            'email',
+            $eid,
+            'from_name_custom'));
       $email['from_name'] = webform_tt($name, $email['from_name']);
     }
     if (!empty($email['template']) && $email['template'] != 'default') {
@@ -369,18 +374,20 @@ function webform_localization_email_translate_strings(&$node) {
  * Remove translation source for webform email poperties.
  *
  * @param $eid
- *   A webform email Id
+ *   A webform email Id.
  * @param $nid
- *   A node Id
+ *   A node Id.
  */
 function webform_localization_emails_delete_translation_string($eid, $nid) {
   $name = implode(':', array('webform', $nid, 'email', $eid, 'subject_custom'));
   i18n_string_remove($name);
-  $name = implode(':', array('webform',
-                             $nid,
-                             'email',
-                             $eid,
-                             'from_name_custom'));
+  $name = implode(
+          ':',
+          array('webform',
+            $nid,
+            'email',
+            $eid,
+            'from_name_custom'));
   i18n_string_remove($name);
   $name = implode(':', array('webform', $nid, 'email', $eid, 'template'));
   i18n_string_remove($name);
@@ -390,7 +397,7 @@ function webform_localization_emails_delete_translation_string($eid, $nid) {
  * Translate general webform poperties.
  *
  * @param $node
- *   A node object
+ *   A node object.
  */
 function webform_localization_delete_translate_strings($node) {
   $name = implode(':', array('webform', $node->webform['nid'], 'confirmation'));
@@ -403,14 +410,14 @@ function webform_localization_delete_translate_strings($node) {
 }
 
 /**
- * Helper function to replace an array key and its content
+ * Helper function to replace an array key and its content.
  *
  * @param $array
- *   Array To process
+ *   Array To process.
  * @param $old_key
- *   Array key to be replaced
+ *   Array key to be replaced.
  * @param $new_key
- *   The new array key
+ *   The new array key.
  *
  */
 function _webform_localization_array_key_replace(&$array, $old_key, $new_key) {
