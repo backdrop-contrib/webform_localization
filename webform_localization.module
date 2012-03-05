@@ -83,8 +83,8 @@ function webform_localization_i18n_string_refresh() {
   /**
    *  NOTE: Delete string for webforms that has disabled i18n translation.
    *  This is the only moment when we deleted translation for disabled webforms.
-   *  This way we provide the feature to temporally disable the webform i18n string
-   *  without losing custom translated texts.
+   *  This way we provide the feature to temporally disable the webform i18n
+   *  string without losing custom translated texts.
    */
   webform_localization_delete_all_strings();
   return TRUE;
@@ -97,7 +97,8 @@ function webform_localization_webform_component_insert($component) {
   // Gets webform localization options that match this node ID.
   $wl_options = _webform_localization_get_config($component['nid']);
 
-  // Create translation source for i18n_string for all the translatable poperties.
+  // Create translation source for i18n_string for all the translatable
+  // poperties.
   if ($wl_options['expose_strings']) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
     webform_localization_component_update_translation_strings($component);
@@ -129,14 +130,15 @@ function webform_localization_webform_component_update($component) {
   // Gets webform localization options that match this node ID.
   $wl_options = _webform_localization_get_config($component['nid']);
 
-  // Create translation source for i18n_string for all the translatable poperties.
+  // Create translation source for i18n_string for all the translatable
+  // poperties.
   if ($wl_options['expose_strings']) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
     webform_localization_component_update_translation_strings($component);
   }
 
   if ($wl_options['sync_components'] && _webform_localization_sync()) {
-    // Turn Off Sync
+    // Turn Off Sync.
     _webform_localization_sync(FALSE);
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.component.sync');
     // Get all versions of the component across all translations.
@@ -147,7 +149,7 @@ function webform_localization_webform_component_update($component) {
     foreach ($translations as $trans_c) {
       webform_component_update($trans_c);
     }
-    // Turn On Sync
+    // Turn On Sync.
     _webform_localization_sync(TRUE);
   }
 }
@@ -166,7 +168,7 @@ function webform_localization_webform_component_delete($component) {
   if ($wl_options['sync_components'] && _webform_localization_sync()) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.component.sync');
     webform_localization_synchronizable_properties_delete($component);
-    // Turn Off Sync
+    // Turn Off Sync.
     _webform_localization_sync(FALSE);
     // Get all versions of the node.
     $node = node_load($component['nid']);
@@ -315,9 +317,9 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
   // Gets webform localization options that match this node ID.
   $webform_localization_options = _webform_localization_get_config($form['nid']['#value']);
   $single_webform = 0;
-  if ($webform_localization_options['single_webform'] > 0
-
-    )$single_webform = 1;
+  if ($webform_localization_options['single_webform'] > 0){
+    $single_webform = 1;
+  }
   $form['localization_by_string'] = array(
     '#type' => 'fieldset',
     '#title' => t('Localization by String Translation'),
@@ -355,7 +357,7 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
     '#type' => 'checkboxes',
     '#options' => $webform_localization_options['webform_properties_structure'],
     '#default_value' => $webform_localization_options['webform_properties'],
-    '#description' => ''
+    '#description' => '',
   );
   $form['localization_by_sync']['sync_components'] = array(
     '#type' => 'checkbox',
@@ -385,13 +387,16 @@ function _webform_localization_webform_configure_form_submit($form, &$form_state
 
   $webform_properties = $form_state['values']['webform_properties'];
   foreach ($webform_properties as $key => $value) {
-    if (!is_string($value))
+    if (!is_string($value)) {
       unset($webform_properties[$key]);
+    }
   }
-  if (count($webform_properties) == 0)
+  if (count($webform_properties) == 0) {
     $webform_properties = '';
-  else
-    $webform_properties=serialize($webform_properties);
+  }
+  else {
+    $webform_properties = serialize($webform_properties);
+  }
   if ($form_state['values']['single_webform'] > 0) {
     $form_state['values']['single_webform'] = $form_state['values']['nid'];
   }
@@ -553,13 +558,15 @@ function webform_localization_field_attach_prepare_translation_alter(&$entity, $
        * Copy all Webform settings over to translated versions of this node if the
        * configuration match.
        */
-      if ($webform_localization_options['sync_components'])
-      /**
-       * NOTE:
-       * Perhaps could be interesting to copy only specific properties
-       * but for now the entire webform make more sense.
-       */
-        $entity->webform = $context['source_entity']->webform;
+      if ($webform_localization_options['sync_components']) {
+        /**
+         * NOTE:
+         * Perhaps could be interesting to copy only specific properties
+         * but for now the entire webform make more sense.
+         */
+          $entity->webform = $context['source_entity']->webform;
+      }
+
     }
   }
 }
@@ -572,7 +579,7 @@ function webform_localization_field_attach_prepare_translation_alter(&$entity, $
  * @param $nid
  *   A node Id.
  * @param boolean $clear_cache
- *   A flag to force a database reading in case that properties are cached
+ *   A flag to force a database reading in case that properties are cached.
  * @return array
  *   Webform localization options that match the nid.
  */
@@ -604,16 +611,17 @@ function _webform_localization_get_config($nid, $clear_cache = FALSE) {
         'sync_emails' => 0,
         'webform_properties' => array(),
         'webform_properties_structure' => $webform_properties,
-        'no_persistent' => TRUE
+        'no_persistent' => TRUE,
       );
     }
     else {
       $options[$nid]['webform_properties_structure'] = $webform_properties;
-      if (empty($options[$nid]['webform_properties'])
-
-        )$options[$nid]['webform_properties'] = array();
-      else
+      if (empty($options[$nid]['webform_properties'])) {
+        $options[$nid]['webform_properties'] = array();
+      }
+      else {
         $options[$nid]['webform_properties'] = unserialize($options[$nid]['webform_properties']);
+      }
       $webform_localization_options[$nid] = $options[$nid];
     }
   }
