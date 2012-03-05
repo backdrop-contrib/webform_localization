@@ -555,8 +555,8 @@ function webform_localization_field_attach_prepare_translation_alter(&$entity, $
     if (isset($context['source_entity']->webform)) {
       $webform_localization_options = _webform_localization_get_config($context['source_entity']->nid);
       /**
-       * Copy all Webform settings over to translated versions of this node if the
-       * configuration match.
+       * Copy all Webform settings over to translated versions of this node
+       * if the configuration match.
        */
       if ($webform_localization_options['sync_components']) {
         /**

@@ -12,7 +12,7 @@
  */
 
 /**
- * Get an array with translated versions of a component
+ * Get an array with translated versions of a component.
  *
  * This array is later used to run sync operations on components.
  *
@@ -56,12 +56,12 @@ function webform_localization_component_get_translations($component) {
 }
 
 /**
- * Synchronize the changed component with it's translations versions
+ * Synchronize the changed component with it's translations versions.
  *
  * @param $component
- *   A webform component that have been modified
+ *   A webform component that have been modified.
  * @param $translations
- *   An Array of the translated webform components to sync with
+ *   An Array of the translated webform components to sync with.
  */
 function webform_localization_component_sync($component, &$translations) {
   /**
@@ -72,12 +72,14 @@ function webform_localization_component_sync($component, &$translations) {
   $sync_properties = webform_localization_synchronizable_properties($component);
   foreach ($translations as $component_key => $translation) {
     foreach ($sync_properties['standar_values'] as $sync_key) {
-      if (is_string($sync_key))
+      if (is_string($sync_key)) {
         $translations[$component_key][$sync_key] = $component[$sync_key];
+      }
     }
     foreach ($sync_properties['extra_values'] as $extra_key) {
-      if (is_string($extra_key) && isset($component['extra'][$extra_key]))
+      if (is_string($extra_key) && isset($component['extra'][$extra_key])) {
         $translations[$component_key]['extra'][$extra_key] = $component['extra'][$extra_key];
+      }
     }
   }
 }
@@ -130,24 +132,25 @@ function webform_localization_synchronizable_properties($component, $clear_cache
 }
 
 /**
- * Get webform component default properties in synchronizable options format
+ * Get webform component default properties in synchronizable options format.
  *
  * @param array $component
- *   A webform component
+ *   A webform component.
  * @return
- *   An array with webform synchronizable default properties
+ *   An array with webform synchronizable default properties.
  */
 function _webform_localization_default_properties($component) {
   $defaults = webform_component_invoke($component['type'], 'defaults');
   $sync = array();
   foreach (array_keys($defaults) as $key) {
-    if ($key != 'extra')
+    if ($key != 'extra') {
       $sync['standar'][$key] = $key;
+    }
   }
   foreach (array_keys($defaults['extra']) as $key) {
     $sync['extra'][$key] = $key;
   }
-  // To inform that there is no table record for this options
+  // To inform that there is no table record for this options.
   $sync['no_persistent'] = TRUE;
   $sync['standar_values'] = array();
   $sync['extra_values'] = array();
@@ -155,10 +158,10 @@ function _webform_localization_default_properties($component) {
 }
 
 /**
- * Delete database record for component localization options
+ * Delete database record for component localization options.
  *
  * @param array $component
- *   A webform component
+ *   A webform component.
  */
 function webform_localization_synchronizable_properties_delete($component) {
   db_delete('webform_component_localization')

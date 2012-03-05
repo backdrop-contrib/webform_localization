@@ -138,25 +138,33 @@ function _webform_localization_component_translation_parse($element, $component)
         }
         if (is_array($element['#' . $key])) {
           // If the translatable property is an array, we translate the
-          //  children.
+          // children.
           foreach ($element['#' . $key] as $elem_key => $elem_value) {
             // If the child if an array, we translate the elements.
             if (is_array($elem_value)) {
               foreach ($elem_value as $k => $v) {
-                $name = implode(':', array('webform',
-                      $component['nid'],
-                      $component['cid'],
-                      $property,
-                      '/-' . $elem_key . '/-',
-                      $k));
+                $name = implode(':',
+                                array(
+                                      'webform',
+                                      $component['nid'],
+                                      $component['cid'],
+                                      $property,
+                                      '/-' . $elem_key . '/-',
+                                      $k,
+                                      )
+                                );
                 $translated_properies[] = $name;
                 webform_tt($name, $v, NULL, TRUE);
               }
-              $name = implode(':', array('webform',
-                    $component['nid'],
-                    $component['cid'],
-                    $property,
-                    '/-' . $elem_key . '/-'));
+              $name = implode(':',
+                              array(
+                                    'webform',
+                                    $component['nid'],
+                                    $component['cid'],
+                                    $property,
+                                    '/-' . $elem_key . '/-',
+                                    )
+                              );
               $translated_properies[] = $name;
               webform_tt($name, $elem_key, NULL, TRUE);
             }
@@ -196,8 +204,9 @@ function _webform_localization_component_translation_parse($element, $component)
     $element[$child]['#parents'][] = $child;
     // Add the translated propertied to the list.
     $translated_properies = array_merge(
-            $translated_properies,
-            _webform_localization_component_translation_parse($element[$child], $component));
+      $translated_properies,
+      _webform_localization_component_translation_parse($element[$child], $component)
+      );
   }
 
   return $translated_properies;
