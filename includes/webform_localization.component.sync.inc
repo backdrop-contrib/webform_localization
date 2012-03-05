@@ -17,11 +17,12 @@
  * This array is later used to run sync operations on components.
  *
  * @staticvar array $component_translations
- *   An array of webform components for each tnid
+ *   An array of webform components for each tnid.
  * @param array $component
- *   A webform component array
+ *   A webform component array.
  * @return
- *   An array of webform components that match a tnid
+ *   An array of webform components that match a tnid.
+ *   
  */
 function webform_localization_component_get_translations($component) {
   static $component_translations = array();
@@ -85,11 +86,11 @@ function webform_localization_component_sync($component, &$translations) {
  * Get synchronizable properties for a webform component
  *
  * @param array $component
- *   A webform component
+ *   A webform component.
  * @param boolean $clear_cache
- *   A flag to force a database reading in case that properties are cached
+ *   A flag to force a database reading in case that properties are cached.
  * @return
- *   An array with synchronizable properties
+ *   An array with synchronizable properties.
  */
 function webform_localization_synchronizable_properties($component, $clear_cache = FALSE) {
   static $webform_component_localization_options = array();
@@ -170,11 +171,12 @@ function webform_localization_synchronizable_properties_delete($component) {
  * Load a Webform Component
  *
  * @param $nid
- *   A node Id
+ *   A node Id.
  * @param $cid
- *   A webform component Id
+ *   A webform component Id.
  * @return
- *   A webform component array
+ *   A webform component array.
+ *   
  */
 function webform_localization_component_load($nid, $cid) {
   $component = db_select('webform_component')

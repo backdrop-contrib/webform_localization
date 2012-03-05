@@ -82,7 +82,9 @@ group.
 Example B: Manage localization for node/1 using translation by sync
 ------------------------------------------------------------------
 
-0. Create all webform components in the node/1 webform.
+0. Create all webform components in the node/1 webform. Enable the Content
+translation module and be sure that the webform content type has enabled the
+multilanguage support (Enabled, with translation) at Publishing options.
 
 1. Go to the Webform tab for that node at node/1/webform.
 
