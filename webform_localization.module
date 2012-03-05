@@ -317,7 +317,7 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
   // Gets webform localization options that match this node ID.
   $webform_localization_options = _webform_localization_get_config($form['nid']['#value']);
   $single_webform = 0;
-  if ($webform_localization_options['single_webform'] > 0){
+  if ($webform_localization_options['single_webform'] > 0) {
     $single_webform = 1;
   }
   $form['localization_by_string'] = array(

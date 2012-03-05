@@ -15,7 +15,7 @@
  * Sync webform configured properties with its translated versions.
  *
  * @param $nid
- *  A node Id
+ *   A node Id.
  */
 function webform_localization_webform_properties_sync($nid) {
   // Gets webform localization options that match this node ID.
@@ -32,7 +32,7 @@ function webform_localization_webform_properties_sync($nid) {
       if ($result) {
         $origin = $result[$nid];
         unset($result[$nid]);
-        // Sync each translated version
+        // Sync each translated version.
         foreach ($result as $webform) {
           foreach ($webform_localization_options['webform_properties'] as $property) {
             $webform[$property] = $origin[$property];
@@ -48,7 +48,7 @@ function webform_localization_webform_properties_sync($nid) {
  * Sync webform roles with its translated versions.
  *
  * @param $nid
- *   A node Id
+ *   A node Id.
  */
 function webform_localization_roles_sync($nid) {
   $node_list = _webform_localization_translation_set_node_list($nid);
@@ -71,7 +71,7 @@ function webform_localization_roles_sync($nid) {
  * Sync webform emails recipients with its translated versions.
  *
  * @param $nid
- *   A node Id
+ *   A node Id.
  */
 function webform_localization_emails_sync($nid) {
   $node_list = _webform_localization_translation_set_node_list($nid);
@@ -112,9 +112,9 @@ function webform_localization_emails_sync($nid) {
  * Get an Array of webform emails recipients for a Node Id.
  *
  * @param $nid
- *   A node Id
+ *   A node Id.
  * @return
- *   An array of webform emails
+ *   An array of webform emails.
  */
 function _webform_localization_emails_load($nid) {
   $emails = db_select('webform_emails')
@@ -136,14 +136,14 @@ function _webform_localization_emails_load($nid) {
  * Get a node Id list of a translation set.
  *
  * @param $nid
- *   A node Id
+ *   A node Id.
  * @return
- *   An array of node ids that share a tnid
+ *   An array of node ids that share a tnid.
  */
 function _webform_localization_translation_set_node_list($nid) {
   static $node_list = array();
   if (!isset($node_list[$nid])) {
-    // Get all versions of the node
+    // Get all versions of the node.
     $node = node_load($nid);
     if (!isset($node->tnid) || $node->tnid == 0) {
       $node_list[$nid] = array();

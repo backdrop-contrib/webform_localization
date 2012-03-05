@@ -4,6 +4,7 @@
  * @file
  * Webform Localization i18n_string integration.
  */
+
 /**
  * Provides interface with the i18n_string module.
  * Based in patch http://drupal.org/node/245424#comment-5244256
@@ -174,7 +175,13 @@ function _webform_localization_component_translation_parse($element, $component)
            * If the translatable property is not an array,
            * it can be treated as a string.
            */
-          $name = implode(':', array('webform', $component['nid'], $component['cid'], $property));
+          $name = implode(
+                          ':',
+                          array('webform',
+                                $component['nid'],
+                                $component['cid'],
+                                $property)
+                          );
           $translated_properies[] = $name;
           webform_tt($name, $element['#' . $key], NULL, TRUE);
         }
@@ -341,7 +348,7 @@ function webform_localization_emails_translation_string_refresh($emails, $nid) {
 /**
  * Translate webform email poperties.
  *
- * @param
+ * @param $node
  *   A node object.
  */
 function webform_localization_email_translate_strings(&$node) {
