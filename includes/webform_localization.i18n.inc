@@ -185,10 +185,12 @@ function _webform_localization_component_translation_parse($element, $component)
            */
           $name = implode(
                           ':',
-                          array('webform',
+                          array(
+                                'webform',
                                 $component['nid'],
                                 $component['cid'],
-                                $property)
+                                $property
+                                )
                           );
           $translated_properies[] = $name;
           webform_tt($name, $element['#' . $key], NULL, TRUE);
