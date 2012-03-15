@@ -194,6 +194,7 @@ function webform_localization_node_view($node, $view_mode) {
   $query = db_select('webform', 'w');
   $query->innerJoin('webform_localization', 'wl', 'w.nid = wl.nid');
   $query->fields('w', array('nid'));
+  $query->condition('wl.single_webform', 0, '!=');
   $query->condition('wl.single_webform', $node->tnid, '=');
   $query->condition('w.nid', $node->nid, '!=');
   $result = $query->execute()->fetchField();
