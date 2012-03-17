@@ -59,7 +59,7 @@ function webform_localization_i18n_string_refresh() {
   $query->fields('wc');
   $query->condition('wl.expose_strings', 0, '>');
   $query->innerJoin('webform_localization', 'wl', 'wc.nid = wl.nid');
-  $components = $query->execute()->fetchAllAssoc('cid');
+  $components = $query->execute()->fetchAll();
   module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
   foreach ($components as $component) {
     $component = (array) $component;
