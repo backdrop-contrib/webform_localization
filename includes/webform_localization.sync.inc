@@ -19,7 +19,7 @@
  */
 function webform_localization_webform_properties_sync($nid) {
   // Gets webform localization options that match this node ID.
-  $webform_localization_options = _webform_localization_get_config($nid, TRUE);
+  $webform_localization_options = webform_localization_get_config($nid, TRUE);
   if (count($webform_localization_options['webform_properties']) > 0) {
     $node_list = _webform_localization_translation_set_node_list($nid);
     if (count($node_list) > 1) {
