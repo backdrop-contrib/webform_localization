@@ -246,14 +246,12 @@ function webform_localization_webform_submission_insert($node, $submission) {
    */
   $language = $node->language;
   // Update language field when a submission is updated.
-  if ($node->nid != $node->webform['nid']) {
-    db_update('webform_submissions')
-        ->fields(array(
-          'language' => $language,
-        ))
-        ->condition('sid', $submission->sid)
-        ->execute();
-  }
+  db_update('webform_submissions')
+      ->fields(array(
+        'language' => $language,
+      ))
+      ->condition('sid', $submission->sid)
+      ->execute();
 }
 
 /**
