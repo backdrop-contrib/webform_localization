@@ -268,26 +268,31 @@ function webform_localization_update_translation_strings($properties) {
 }
 
 /**
- * Translate general webform poperties.
+ * Translate general webform properties.
  *
  * @param $node
  *   A node object.
  */
-function webform_localization_translate_strings(&$node) {
+function webform_localization_translate_strings(&$node, $update = FALSE) {
   $name = implode(':', array('webform',
         $node->webform['nid'],
         'confirmation'));
   $node->webform['confirmation'] = webform_tt(
           $name,
-          $node->webform['confirmation']);
+          $node->webform['confirmation'],
+          NULL,
+          $update);
   $name = implode(
           ':',
           array(
             'webform',
             $node->webform['nid'],
             'submit_text'));
-  $node->webform['submit_text'] = webform_tt($name,
-          $node->webform['submit_text']);
+  $node->webform['submit_text'] = webform_tt(
+          $name,
+          $node->webform['submit_text'],
+          NULL,
+          $update);
 }
 
 /**

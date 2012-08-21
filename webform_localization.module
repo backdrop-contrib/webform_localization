@@ -75,10 +75,13 @@ function webform_localization_i18n_string_refresh() {
   $query->fields('wl', array('nid'));
   $query->condition('wl.expose_strings', 0, '>');
   $nid_list = $query->execute()->fetchAllAssoc('nid');
+  $nodes = node_load_multiple(array_keys($nid_list));
   module_load_include('inc', 'webform_localization', 'includes/webform_localization.sync');
   foreach ($nid_list as $nid => $value) {
     $emails = _webform_localization_emails_load($nid);
     webform_localization_emails_translation_string_refresh($emails, $nid);
+    $node = $nodes[$nid];
+    webform_localization_translate_strings($node, TRUE);
   }
   /**
    *  NOTE: Delete string for webforms that has disabled i18n translation.
