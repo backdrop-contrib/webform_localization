@@ -75,6 +75,7 @@ function webform_localization_i18n_string_refresh() {
   $query->fields('wl', array('nid'));
   $query->condition('wl.expose_strings', 0, '>');
   $nid_list = $query->execute()->fetchAllAssoc('nid');
+  // @todo: Find a more eficient way to manage webform translatable properties.
   $nodes = node_load_multiple(array_keys($nid_list));
   module_load_include('inc', 'webform_localization', 'includes/webform_localization.sync');
   foreach ($nid_list as $nid => $value) {
