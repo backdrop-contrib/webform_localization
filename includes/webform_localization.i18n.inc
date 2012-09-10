@@ -265,6 +265,13 @@ function webform_localization_update_translation_strings($properties) {
     $name = implode(':', array('webform', $properties['nid'], 'submit_text'));
     webform_tt($name, $properties['submit_text'], NULL, TRUE);
   }
+
+  // Allow to translate the redirect url if it's not set to none or the
+  // default confirmation page.
+  if (!in_array($properties['redirect_url'], array('<confirmation>', '<none>'))) {
+    $name = implode(':', array('webform', $properties['nid'], 'redirect_url'));
+    webform_tt($name, $properties['redirect_url'], NULL, TRUE);
+  }
 }
 
 /**
@@ -293,6 +300,13 @@ function webform_localization_translate_strings(&$node, $update = FALSE) {
           $node->webform['submit_text'],
           NULL,
           $update);
+
+  // Allow to translate the redirect url if it's not set to none or the
+  // default confirmation page.
+  if (!in_array($node->webform['redirect_url'], array('<confirmation>', '<none>'))) {
+    $name = implode(':', array('webform', $node->webform['nid'], 'redirect_url'));
+    $node->webform['redirect_url'] = webform_tt($name, $node->webform['redirect_url'], NULL, $update);
+  }
 }
 
 /**
@@ -312,6 +326,11 @@ function webform_localization_emails_update_translation_string($properties) {
               $eid,
               'subject_custom'));
     webform_tt($name, $properties['subject_custom'], NULL, TRUE);
+  }
+  // Allow to translate the mail recipients if not based on a component.
+  if (!empty($properties['email']) && !is_numeric($properties['email'])) {
+    $name = implode(':', array('webform', $nid, 'email', $eid, 'email'));
+    webform_tt($name, $properties['email'], NULL, TRUE);
   }
   if (!empty($properties['from_name_custom'])) {
     $name = implode(':', array('webform',
@@ -346,6 +365,11 @@ function webform_localization_emails_translation_string_refresh($emails, $nid) {
             'subject_custom'));
       webform_tt($name, $email['subject'], NULL, TRUE);
     }
+    // Allow to translate the mail recipients if not based on a component.
+    if (!empty($email['email']) && !is_numeric($email['email'])) {
+      $name = implode(':', array('webform', $nid, 'email', $eid, 'email'));
+      webform_tt($name, $email['email'], NULL, TRUE);
+    }
     if (!empty($email['from_name']) && $email['from_name'] != 'default') {
       $name = implode(':', array('webform',
             $nid,
@@ -377,6 +401,11 @@ function webform_localization_email_translate_strings(&$node) {
             $eid,
             'subject_custom'));
       $email['subject'] = webform_tt($name, $email['subject']);
+    }
+    // Allow to translate the mail recipients if not based on a component.
+    if (!empty($email['email']) && !is_numeric($email['email'])) {
+      $name = implode(':', array('webform', $nid, 'email', $eid, 'email'));
+      $email['email'] = webform_tt($name, $email['email']);
     }
     if (!empty($email['from_name']) && $email['from_name'] != 'default') {
       $name = implode(':', array('webform',
