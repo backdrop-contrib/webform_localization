@@ -77,7 +77,12 @@ function _webform_localization_translate_component(&$element, $component) {
         else {
           // Else we can treat the property as string.
           if (isset($current_element['#' . $property])) {
-            $current_element['#' . $property] = webform_tt($name, $current_element['#' . $property]);
+            if ($property == 'markup' && $current_element['#type'] == 'markup') {
+              $current_element['#' . $property] = i18n_string($name, $current_element['#' . $property], array('format' => $current_element['#format']));
+            }
+            else {
+              $current_element['#' . $property] = webform_tt($name, $current_element['#' . $property]);
+            }
           }
         }
       }
