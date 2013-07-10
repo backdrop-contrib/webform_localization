@@ -128,9 +128,15 @@ function webform_localization_webform_component_insert($component) {
 }
 
 /**
- * Implements hook_webform_component_update().
+ * Implements hook_webform_component_presave().
  */
-function webform_localization_webform_component_update($component) {
+function webform_localization_webform_component_presave(&$component) {
+  // If this is an insert, skip handling as this is handled by
+  // hook_webform_component_insert().
+  if (empty($component['cid'])) {
+    return;
+  }
+
   // Gets webform localization options that match this node ID.
   $wl_options = webform_localization_get_config($component['nid']);
 
