@@ -662,6 +662,9 @@ function _webform_localization_sync($status = NULL) {
  * Translate webform confirmation field
  */
 function webform_localization_preprocess_webform_confirmation(&$vars) {
+  if (empty($vars['node']->tnid)) {
+    return;
+  }
   // Select all webforms that match the localization configuration.
   $query = db_select('webform', 'w');
   $query->innerJoin('webform_localization', 'wl', 'w.nid = wl.nid');
