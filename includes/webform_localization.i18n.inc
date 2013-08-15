@@ -55,7 +55,7 @@ function _webform_localization_translate_component(&$element, $component) {
         // If property is array, we extract the key from the property.
         list ($property, $key) = explode('-', $property);
         if (isset($current_element['#' . $property][$key])) {
-          $current_element['#' . $property][$key] = webform_tt($name, $current_element['#' . $property][$key]);
+          $current_element['#' . $property][$key] = i18n_string($name, $current_element['#' . $property][$key], array('sanitize' => FALSE));
         }
       }
       else {
@@ -64,11 +64,11 @@ function _webform_localization_translate_component(&$element, $component) {
           $option_group = str_replace('/-', '', $name_list[4]);
           // If it's a element.
           if (isset($name_list[5])) {
-            $current_element['#' . $property][$option_group][$name_list[5]] = webform_tt($name, $current_element['#' . $property][$option_group][$name_list[5]]);
+            $current_element['#' . $property][$option_group][$name_list[5]] = i18n_string($name, $current_element['#' . $property][$option_group][$name_list[5]]);
           }
           else {
             // If it's a option group we translate the key.
-            $translated_option_group = webform_tt($name, $option_group);
+            $translated_option_group = i18n_string($name, $option_group);
             if ($translated_option_group != $option_group) {
               _webform_localization_array_key_replace($current_element['#' . $property], $option_group, $translated_option_group);
             }
@@ -81,7 +81,7 @@ function _webform_localization_translate_component(&$element, $component) {
               $current_element['#' . $property] = i18n_string($name, $current_element['#' . $property], array('format' => $current_element['#format']));
             }
             else {
-              $current_element['#' . $property] = webform_tt($name, $current_element['#' . $property]);
+              $current_element['#' . $property] = i18n_string($name, $current_element['#' . $property]);
             }
           }
         }
@@ -159,7 +159,7 @@ function _webform_localization_component_translation_parse($element, $component)
                                       )
                                 );
                 $translated_properies[] = $name;
-                webform_tt($name, $v, NULL, TRUE);
+                i18n_string($name, $v, array('update' => TRUE));
               }
               $name = implode(':',
                               array(
@@ -171,7 +171,7 @@ function _webform_localization_component_translation_parse($element, $component)
                                     )
                               );
               $translated_properies[] = $name;
-              webform_tt($name, $elem_key, NULL, TRUE);
+              i18n_string($name, $elem_key, array('update' => TRUE));
             }
             else {
               // If the child is not an array.
@@ -179,7 +179,7 @@ function _webform_localization_component_translation_parse($element, $component)
                     $component['nid'], $component['cid'],
                     $property . '-' . $elem_key));
               $translated_properies[] = $name;
-              webform_tt($name, $elem_value, NULL, TRUE);
+              i18n_string($name, $elem_value, array('update' => TRUE));
             }
           }
         }
@@ -198,7 +198,7 @@ function _webform_localization_component_translation_parse($element, $component)
                                 )
                           );
           $translated_properies[] = $name;
-          webform_tt($name, $element['#' . $key], NULL, TRUE);
+          i18n_string($name, $element['#' . $key], array('update' => TRUE));
         }
       }
     }
@@ -264,18 +264,18 @@ function webform_localization_component_delete_translation_strings($component) {
 function webform_localization_update_translation_strings($properties) {
   if (!empty($properties['confirmation']['value'])) {
     $name = implode(':', array('webform', $properties['nid'], 'confirmation'));
-    webform_tt($name, $properties['confirmation']['value'], NULL, TRUE);
+    i18n_string($name, $properties['confirmation']['value'], array('update' => TRUE));
   }
   if (!empty($properties['submit_text'])) {
     $name = implode(':', array('webform', $properties['nid'], 'submit_text'));
-    webform_tt($name, $properties['submit_text'], NULL, TRUE);
+    i18n_string($name, $properties['submit_text'], array('update' => TRUE));
   }
 
   // Allow to translate the redirect url if it's not set to none or the
   // default confirmation page.
   if (!in_array($properties['redirect_url'], array('<confirmation>', '<none>'))) {
     $name = implode(':', array('webform', $properties['nid'], 'redirect_url'));
-    webform_tt($name, $properties['redirect_url'], NULL, TRUE);
+    i18n_string($name, $properties['redirect_url'], array('update' => TRUE));
   }
 }
 
@@ -286,31 +286,30 @@ function webform_localization_update_translation_strings($properties) {
  *   A node object.
  */
 function webform_localization_translate_strings(&$node, $update = FALSE) {
+  $option = array('update' => $update, 'sanitize' => FALSE);
   $name = implode(':', array('webform',
         $node->webform['nid'],
         'confirmation'));
-  $node->webform['confirmation'] = webform_tt(
+  $node->webform['confirmation'] = i18n_string(
           $name,
           $node->webform['confirmation'],
-          NULL,
-          $update);
+          $option);
   $name = implode(
           ':',
           array(
             'webform',
             $node->webform['nid'],
             'submit_text'));
-  $node->webform['submit_text'] = webform_tt(
+  $node->webform['submit_text'] = i18n_string(
           $name,
           $node->webform['submit_text'],
-          NULL,
-          $update);
+          $option);
 
   // Allow to translate the redirect url if it's not set to none or the
   // default confirmation page.
   if (!in_array($node->webform['redirect_url'], array('<confirmation>', '<none>'))) {
     $name = implode(':', array('webform', $node->webform['nid'], 'redirect_url'));
-    $node->webform['redirect_url'] = webform_tt($name, $node->webform['redirect_url'], NULL, $update);
+    $node->webform['redirect_url'] = i18n_string($name, $node->webform['redirect_url'], $option);
   }
 }
 
@@ -330,12 +329,12 @@ function webform_localization_emails_update_translation_string($properties) {
               'email',
               $eid,
               'subject_custom'));
-    webform_tt($name, $properties['subject_custom'], NULL, TRUE);
+    i18n_string($name, $properties['subject_custom'], array('update' => TRUE));
   }
   // Allow to translate the mail recipients if not based on a component.
   if (!empty($properties['email']) && !is_numeric($properties['email'])) {
     $name = implode(':', array('webform', $nid, 'email', $eid, 'email'));
-    webform_tt($name, $properties['email'], NULL, TRUE);
+    i18n_string($name, $properties['email'], array('update' => TRUE));
   }
   if (!empty($properties['from_name_custom'])) {
     $name = implode(':', array('webform',
@@ -343,11 +342,11 @@ function webform_localization_emails_update_translation_string($properties) {
           'email',
           $eid,
           'from_name_custom'));
-    webform_tt($name, $properties['from_name_custom'], NULL, TRUE);
+    i18n_string($name, $properties['from_name_custom'], array('update' => TRUE));
   }
   if (!empty($properties['template'])) {
     $name = implode(':', array('webform', $nid, 'email', $eid, 'template'));
-    webform_tt($name, $properties['template'], NULL, TRUE);
+    i18n_string($name, $properties['template'], array('update' => TRUE));
   }
 }
 
@@ -368,12 +367,12 @@ function webform_localization_emails_translation_string_refresh($emails, $nid) {
             'email',
             $eid,
             'subject_custom'));
-      webform_tt($name, $email['subject'], NULL, TRUE);
+      i18n_string($name, $email['subject'], array('update' => TRUE));
     }
     // Allow to translate the mail recipients if not based on a component.
     if (!empty($email['email']) && !is_numeric($email['email'])) {
       $name = implode(':', array('webform', $nid, 'email', $eid, 'email'));
-      webform_tt($name, $email['email'], NULL, TRUE);
+      i18n_string($name, $email['email'], array('update' => TRUE));
     }
     if (!empty($email['from_name']) && $email['from_name'] != 'default') {
       $name = implode(':', array('webform',
@@ -381,11 +380,11 @@ function webform_localization_emails_translation_string_refresh($emails, $nid) {
             'email',
             $eid,
             'from_name_custom'));
-      webform_tt($name, $email['from_name'], NULL, TRUE);
+      i18n_string($name, $email['from_name'], array('update' => TRUE));
     }
     if (!empty($email['template']) && $email['template'] != 'default') {
       $name = implode(':', array('webform', $nid, 'email', $eid, 'template'));
-      webform_tt($name, $email['template'], NULL, TRUE);
+      i18n_string($name, $email['template'], array('update' => TRUE));
     }
   }
 }
@@ -405,12 +404,12 @@ function webform_localization_email_translate_strings(&$node) {
             'email',
             $eid,
             'subject_custom'));
-      $email['subject'] = webform_tt($name, $email['subject']);
+      $email['subject'] = i18n_string($name, $email['subject']);
     }
     // Allow to translate the mail recipients if not based on a component.
     if (!empty($email['email']) && !is_numeric($email['email'])) {
       $name = implode(':', array('webform', $nid, 'email', $eid, 'email'));
-      $email['email'] = webform_tt($name, $email['email']);
+      $email['email'] = i18n_string($name, $email['email']);
     }
     if (!empty($email['from_name']) && $email['from_name'] != 'default') {
       $name = implode(':', array('webform',
@@ -418,11 +417,11 @@ function webform_localization_email_translate_strings(&$node) {
             'email',
             $eid,
             'from_name_custom'));
-      $email['from_name'] = webform_tt($name, $email['from_name']);
+      $email['from_name'] = i18n_string($name, $email['from_name']);
     }
     if (!empty($email['template']) && $email['template'] != 'default') {
       $name = implode(':', array('webform', $nid, 'email', $eid, 'template'));
-      $email['template'] = webform_tt($name, $email['template']);
+      $email['template'] = i18n_string($name, $email['template']);
     }
   }
 }

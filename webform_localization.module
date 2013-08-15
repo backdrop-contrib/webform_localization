@@ -373,7 +373,7 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
     '#type' => 'checkbox',
     '#title' => t('Synchronize webform components across node translations.'),
     '#default_value' => $webform_localization_options['sync_components'],
-    '#description' => '<p>' . t('Copy the entire webform structure when a node is translatedand synchronize changes on selected components properties.', array('html' => TRUE)) . '</p>',
+    '#description' => '<p>' . t('Copy the entire webform structure when a node is translated and synchronize changes on selected components properties.', array('html' => TRUE)) . '</p>',
   );
   $form['localization_by_sync']['sync_roles'] = array(
     '#type' => 'checkbox',
