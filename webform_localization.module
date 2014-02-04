@@ -684,3 +684,24 @@ function webform_localization_preprocess_webform_confirmation(&$vars) {
   // Strip out empty tags added by WYSIWYG editors if needed.
   $vars['confirmation_message'] = drupal_strlen(trim(strip_tags($confirmation))) ? $confirmation : '';
 }
+
+/**
+ * Implements hook_form_webform_client_form_alter().
+ *
+ */
+function webform_localization_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
+  if (!isset($form['#node']->webform['nid'])) {
+    return;
+  }
+  $webform_localization_options = webform_localization_get_config($form['#node']->webform['nid']);
+  if ($webform_localization_options['single_webform']) {
+    if (isset($form['details']['nid']['#value']) && $form['#node']->webform['nid'] == $form['#node']->tnid) {
+      // We add tnid value from the (source) webform.
+      $form['details']['tnid'] = array(
+        '#type' => 'value',
+        '#value' => $form['#node']->tnid,
+      );
+    }
+  }
+}
+
