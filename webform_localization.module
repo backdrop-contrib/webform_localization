@@ -696,12 +696,13 @@ function webform_localization_form_webform_client_form_alter(&$form, &$form_stat
   $webform_localization_options = webform_localization_get_config($form['#node']->webform['nid']);
   if ($webform_localization_options['single_webform']) {
     if (isset($form['details']['nid']['#value']) && $form['#node']->webform['nid'] == $form['#node']->tnid) {
-      // We add tnid value from the (source) webform.
-      $form['details']['tnid'] = array(
+      // We keep current language node nid.
+      $form['details']['current_language_nid'] = array(
         '#type' => 'value',
-        '#value' => $form['#node']->tnid,
+        '#value' => $form['details']['nid']['#value'],
       );
+      // Nid from the source webform for webform_validation.
+      $form['details']['nid']['#value'] = $form['#node']->webform['nid'];
     }
   }
 }
-
