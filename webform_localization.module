@@ -217,10 +217,18 @@ function webform_localization_node_view($node, $view_mode) {
      * independent function to reuse.
      */
     $source_node = node_load($result);
-    // We replace the webform with the node translation source
+    // We replace the webform with the node translation source.
     $node->webform = $source_node->webform;
-    // Call node view implementation to update the $node->content
+
+    // This fool webform_node_view to avoid errors with drafts in between pages.
+    $translation_nid = $node->nid;
+    if (($node->webform['allow_draft'] || $node->webform['auto_save']) && $user->uid != 0) {
+      $node->nid = $source_node->nid;
+    }
+    // Call node view implementation to update the $node->content.
     webform_node_view($node, $view_mode);
+    // Reset the nid if we used the drafts fix.
+    $node->nid = $translation_nid;
   }
 }
 
