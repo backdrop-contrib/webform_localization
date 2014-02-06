@@ -10,7 +10,7 @@
  * Based in patch http://drupal.org/node/245424#comment-5244256
  * by Calin Marian. Further development sponsored by Riot Games.
  *
- * @author German Martin <gmartin.prg@gmail.com>
+ * @author German Martin <gmartin.php@gmail.com>
  */
 
 /**
