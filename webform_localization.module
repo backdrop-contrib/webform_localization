@@ -54,13 +54,16 @@ function webform_localization_i18n_string_info() {
  * components of the matching webforms configuration
  */
 function webform_localization_i18n_string_refresh() {
+  
   // Get components configured as translatable.
   $query = db_select('webform_component', 'wc');
   $query->fields('wc');
   $query->condition('wl.expose_strings', 0, '>');
   $query->innerJoin('webform_localization', 'wl', 'wc.nid = wl.nid');
   $components = $query->execute()->fetchAll();
+
   module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+  
   foreach ($components as $component) {
     $component = (array) $component;
     $component['extra'] = unserialize($component['extra']);
@@ -712,5 +715,27 @@ function webform_localization_form_webform_client_form_alter(&$form, &$form_stat
       // Nid from the source webform for webform_validation.
       $form['details']['nid']['#value'] = $form['#node']->webform['nid'];
     }
+  }
+}
+
+/**
+ * Implements hook_modules_disabled().
+ *
+ */
+function webform_localization_modules_disabled($modules) {
+  if (in_array('uuid', $modules)) {
+    module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+    webform_localization_uuid_update_strings(TRUE);
+  }
+}
+
+/**
+ * Implements hook_modules_enabled().
+ *
+ */
+function webform_localization_modules_enabled($modules) {
+  if (in_array('uuid', $modules)) {
+    module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+    webform_localization_uuid_update_strings(FALSE);
   }
 }

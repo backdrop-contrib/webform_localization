@@ -426,6 +426,64 @@ function webform_localization_delete_translate_strings($node) {
 }
 
 /**
+ * Update i18n string contexts if uuid module is enabled/disabled.
+ * 
+ */
+function webform_localization_uuid_update_strings($disabling_uuid = FALSE) {
+  module_load_install('i18n_string');
+  $old_ids = db_query('SELECT distinct type FROM {i18n_string} WHERE textgroup = :webform', array(
+        ':webform' => 'webform'
+      ))->fetchCol();
+
+  if (!$disabling_uuid) {
+    $old_context_ids = entity_get_uuid_by_id('node', array($old_ids));
+  }
+  else {
+    // entity_get_id_by_uuid() do not work properly on hook_disable.
+    $old_context_ids = webform_localization_get_id_by_uuid('node', array($old_ids));
+  }
+
+  foreach ($old_context_ids as $old_id => $new_id) {
+    $old_context = 'webform:' . $old_id . ':*';
+    $new_context = 'webform:' . $new_id . ':*';
+    i18n_string_install_update_context($old_context, $new_context);
+  }
+}
+
+/**
+ * Helper function that retrieves entity IDs by their UUIDs.
+ *
+ *
+ * @param $entity_type
+ *   The entity type we should be dealing with.
+ * @param $uuids
+ *   An array of UUIDs for which we should find their entity IDs. If $revision
+ *   is TRUE this should be revision UUIDs instead.
+ * @return
+ *   Array of entity IDs keyed by their UUIDs. If $revision is TRUE revision
+ *   IDs and UUIDs are returned instead.
+ */
+function webform_localization_get_id_by_uuid($entity_type, $uuids) {
+  if (empty($uuids)) {
+    return array();
+  }
+  $info = entity_get_info($entity_type);
+  $table = $info['base table'];
+  $id_key = $info['entity keys']['id'];
+
+  // The uuid key is not available at hook_disable.
+  $core_info = uuid_get_core_entity_info();
+  $uuid_key = $info['node']['entity keys']['uuid'];
+
+  // Get all UUIDs in one query.
+  return db_select($table, 't')
+    ->fields('t', array($uuid_key, $id_key))
+    ->condition($uuid_key, array_values($uuids), 'IN')
+    ->execute()
+    ->fetchAllKeyed();
+}
+
+/**
  * Helper function to replace an array key and its content.
  *
  * @param $array
