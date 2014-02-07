@@ -136,3 +136,21 @@ function webform_localization_schema_alter(&$schema) {
     'default' => '',
   );
 }
+
+/**
+ * Update i18n string contexts if uuid module is installed.
+ */
+function webform_localization_update_7001() {
+  if (!module_exists('uuid')) {
+    return;
+  }
+  $webform_nids = db_query('SELECT distinct type FROM {i18n_string} WHERE textgroup = :webform', array(
+    ':webform' => 'webform'
+  ))->fetchCol();
+  $uuids = entity_get_uuid_by_id('node', array($webform_nids));
+  foreach ($uuids as $webform_nid => $uuid) {
+    $old_context = 'webform:' . $webform_nid . ':*';
+    $new_context = 'webform:' . $uuid . ':*';
+    i18n_string_install_update_context($old_context, $new_context);
+  }
+}
