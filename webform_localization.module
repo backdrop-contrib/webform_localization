@@ -55,14 +55,19 @@ function webform_localization_i18n_string_info() {
  */
 function webform_localization_i18n_string_refresh() {
 
+  module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+
+  // In case updating before UUID support.
+  if (module_exists('uuid') && !variable_get('webform_localization_using_uuid', FALSE)) {
+    webform_localization_uuid_update_strings(FALSE);
+  }
+
   // Get components configured as translatable.
   $query = db_select('webform_component', 'wc');
   $query->fields('wc');
   $query->condition('wl.expose_strings', 0, '>');
   $query->innerJoin('webform_localization', 'wl', 'wc.nid = wl.nid');
   $components = $query->execute()->fetchAll();
-
-  module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
 
   foreach ($components as $component) {
     $component = (array) $component;
