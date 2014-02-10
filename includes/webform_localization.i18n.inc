@@ -4,7 +4,6 @@
  * @file
  * Webform Localization i18n_string integration.
  */
-
 /**
  * Provides interface with the i18n_string module.
  * Based in patch http://drupal.org/node/245424#comment-5244256
@@ -184,9 +183,9 @@ function _webform_localization_component_translation_parse($element, $component)
     $element[$child]['#parents'][] = $child;
     // Add the translated propertied to the list.
     $translated_properies = array_merge(
-      $translated_properies,
-      _webform_localization_component_translation_parse($element[$child], $component)
-      );
+            $translated_properies,
+            _webform_localization_component_translation_parse($element[$child], $component)
+    );
   }
 
   return $translated_properies;
@@ -477,10 +476,10 @@ function webform_localization_get_id_by_uuid($entity_type, $uuids) {
 
   // Get all UUIDs in one query.
   return db_select($table, 't')
-    ->fields('t', array($uuid_key, $id_key))
-    ->condition($uuid_key, array_values($uuids), 'IN')
-    ->execute()
-    ->fetchAllKeyed();
+      ->fields('t', array($uuid_key, $id_key))
+      ->condition($uuid_key, array_values($uuids), 'IN')
+      ->execute()
+      ->fetchAllKeyed();
 }
 
 /**
