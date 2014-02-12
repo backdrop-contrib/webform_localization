@@ -340,8 +340,21 @@ function webform_localization_webform_component_display_alter(&$display_element,
  * Add specific localization options to Webform Configure Form
  */
 function webform_localization_form_webform_configure_form_alter(&$form, &$form_state, $form_id) {
+
   // Gets webform localization options that match this node ID.
   $webform_localization_options = webform_localization_get_config($form['nid']['#value']);
+
+  if ($webform_localization_options['expose_strings']) {
+    // Avoid caching for translatable element values.
+    entity_get_controller('node')->resetCache(array($form['nid']['#value']));
+    $form['#node'] = node_load($form['nid']['#value']);
+    $form['submission']['confirmation']['#default_value'] = $form['#node']->webform['confirmation'];
+    if ($form['submission']['redirection']['redirect']['#default_value'] == 'url') {
+      $form['submission']['redirection']['redirect_url']['#default_value'] = $form['#node']->webform['redirect_url'];
+    }
+    $form['advanced']['submit_text']['#default_value'] = $form['#node']->webform['submit_text'];
+  }
+
   $single_webform = 0;
   if ($webform_localization_options['single_webform'] > 0) {
     $single_webform = 1;
@@ -404,6 +417,12 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
     '#description' => '<p>' . t('Keep the webform e-mail recipients synchronized in a translation set.') . '</p>',
   );
   $form['#submit'][] = '_webform_localization_webform_configure_form_submit';
+  if ($webform_localization_options['expose_strings']) {
+    // Using i18n string we need to tweak values before submit.
+    $submit_array = $form['#submit'];
+    array_unshift($submit_array, '_webform_localization_webform_configure_form_submit_i18n_tweaks');
+    $form['#submit'] = $submit_array;
+  }
 }
 
 /**
@@ -452,6 +471,25 @@ function _webform_localization_webform_configure_form_submit($form, &$form_state
   if ($webform_localization_options['expose_strings']) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
     webform_localization_update_translation_strings($form_state['values']);
+  }
+}
+
+/**
+ * Handle translated element tweaks in Webform Configure Form
+ */
+function _webform_localization_webform_configure_form_submit_i18n_tweaks($form, &$form_state) {
+  global $language;
+  $default_language = language_default();
+  if ($default_language->language != $language->language) {
+    // Webform Configure Form not in default language.
+    module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+    $name = webform_localization_i18n_string_name($form['#node']->webform['nid'], 'confirmation');
+    $string_source = i18n_string_get_string($name);
+    $string_translation = $form_state['values']['confirmation']['value'];
+    // We reset the source string value before saving the form.
+    $form_state['values']['confirmation']['value'] = $string_source->get_string();
+    // We save the translated string using i18n string.
+    i18n_string_translation_update($name, $string_translation, $language->language);
   }
 }
 
