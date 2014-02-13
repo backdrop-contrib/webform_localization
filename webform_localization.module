@@ -48,10 +48,10 @@ function webform_localization_i18n_string_info() {
 }
 
 /**
- * Update / create / delete translation source for components
+ * Update / create / delete translation source for components.
  *
  * Refresh callback that regenerates all the translatable poperties of the
- * components of the matching webforms configuration
+ * components of the matching webforms configuration.
  */
 function webform_localization_i18n_string_refresh() {
 
@@ -254,7 +254,7 @@ function webform_localization_node_load($nodes, $types) {
     $wl_options = webform_localization_get_config($nid);
     if ($wl_options['expose_strings']) {
       module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
-      // Translate custom strings
+      // Translate custom strings.
       webform_localization_translate_strings($node);
       webform_localization_email_translate_strings($node);
     }
@@ -426,7 +426,7 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
 }
 
 /**
- * Handle specific localization options in Webform Configure Form
+ * Handle specific localization options in Webform Configure Form.
  */
 function _webform_localization_webform_configure_form_submit($form, &$form_state) {
 
@@ -475,7 +475,7 @@ function _webform_localization_webform_configure_form_submit($form, &$form_state
 }
 
 /**
- * Handle translated element tweaks in Webform Configure Form
+ * Handle translated element tweaks in Webform Configure Form.
  */
 function _webform_localization_webform_configure_form_submit_i18n_tweaks($form, &$form_state) {
   global $language;
@@ -645,8 +645,9 @@ function webform_localization_field_attach_prepare_translation_alter(&$entity, $
  *   An array of webform localization options group by nid.
  * @param $nid
  *   A node Id.
- * @param boolean $clear_cache
+ * @param bool $clear_cache
  *   A flag to force a database reading in case that properties are cached.
+ *
  * @return array
  *   Webform localization options that match the nid.
  */
@@ -697,9 +698,10 @@ function webform_localization_get_config($nid, $clear_cache = FALSE) {
 
 /**
  * Global switch to enable / disable syncing.
+ *
  * This function also check whether we are synching at the moment.
  *
- * @return boolean
+ * @return bool
  *   TRUE if we need to run sync operations. FALSE during syncing
  *   so we don't have recursion.
  */
@@ -712,7 +714,7 @@ function _webform_localization_sync($status = NULL) {
 }
 
 /**
- * Translate webform confirmation field
+ * Translate webform confirmation field.
  */
 function webform_localization_preprocess_webform_confirmation(&$vars) {
   if (empty($vars['node']->tnid)) {
@@ -740,7 +742,6 @@ function webform_localization_preprocess_webform_confirmation(&$vars) {
 
 /**
  * Implements hook_form_webform_client_form_alter().
- *
  */
 function webform_localization_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
   if (!isset($form['#node']->webform['nid'])) {
@@ -762,7 +763,6 @@ function webform_localization_form_webform_client_form_alter(&$form, &$form_stat
 
 /**
  * Implements hook_modules_disabled().
- *
  */
 function webform_localization_modules_disabled($modules) {
   if (in_array('uuid', $modules)) {
@@ -773,7 +773,6 @@ function webform_localization_modules_disabled($modules) {
 
 /**
  * Implements hook_modules_enabled().
- *
  */
 function webform_localization_modules_enabled($modules) {
   if (in_array('uuid', $modules)) {
