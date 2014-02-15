@@ -433,13 +433,14 @@ function webform_localization_uuid_update_strings($disabling_uuid = FALSE) {
   $old_ids = db_query('SELECT distinct type FROM {i18n_string} WHERE textgroup = :webform', array(
         ':webform' => 'webform'
       ))->fetchCol();
-
+  variable_set('webform_localization_using_uuid', !$disabling_uuid);
+  if (empty($old_ids)) {
+    return;
+  }
   if (!$disabling_uuid) {
-    variable_set('webform_localization_using_uuid', $disabling_uuid);
     $old_context_ids = entity_get_uuid_by_id('node', array($old_ids));
   }
   else {
-    variable_set('webform_localization_using_uuid', !$disabling_uuid);
     // entity_get_id_by_uuid() do not work properly on hook_disable.
     $old_context_ids = webform_localization_get_id_by_uuid('node', array($old_ids));
   }
