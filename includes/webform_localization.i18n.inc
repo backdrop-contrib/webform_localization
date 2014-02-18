@@ -90,6 +90,52 @@ function _webform_localization_translate_component(&$element, $component) {
 }
 
 /**
+ * Translates the analysis component properties that are translatable.
+ *
+ * These are found in under 'translated_strings' in the 'extra' array of the
+ * component, which is build when the component is inserted / updated, or
+ * when all webform strings are updated from
+ * admin/config/regional/translate/i18n_string.
+ *
+ * @param array $data
+ *   The data array of component results.
+ * @param array $component
+ *   The component.
+ */
+function _webform_localization_translate_analysis_component(&$data, &$component) {
+  if (!isset($component['extra']['translated_strings']) || !is_array($component['extra']['translated_strings'])) {
+    return;
+  }
+  // Attempt to translate select options
+  if ($component['type'] == 'select') {
+    $item_key_lookup = array();
+    $items = explode("\n", trim($component['extra']['items']));
+    foreach ($items as $item) {
+      $item_data = explode('|', $item);
+      $item_key_lookup[$item_data[0]] = $item_data[1];
+    }
+  }
+  foreach ($component['extra']['translated_strings'] as $name) {
+    $name_list = explode(':', $name);
+    // Translate component name from title property.
+    if ($name_list[3] == '#title') {
+      $component['name'] = i18n_string($name, $component['name']);
+    }
+    // Translate options for select elements
+    if ($component['type'] == 'select' && strpos($name_list[3], '-') !== FALSE) {
+      list ( , $key) = explode('-', $name_list[3]);
+      if (isset($item_key_lookup[$key])) {
+        foreach ($data['table_rows'] as $index => $row) {
+          if ($row[0] == $item_key_lookup[$key]) {
+            $data['table_rows'][$index][0] = i18n_string($name, $row[0]);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
  * Update / create translation source for all the translatable poperties.
  *
  * @param array $component

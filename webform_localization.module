@@ -335,6 +335,19 @@ function webform_localization_webform_component_display_alter(&$display_element,
 }
 
 /**
+ * Implements hook_webform_analysis_component_data_alter().
+ */
+function webform_localization_webform_analysis_component_data_alter(&$data, $node, &$component) {
+  // Gets webform localization options that match this node ID.
+  $wl_options = webform_localization_get_config($node->nid);
+  // Translate the translatable properties.
+  if ($wl_options['expose_strings']) {
+    module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+    _webform_localization_translate_analysis_component($data, $component);
+  }
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  *
  * Add specific localization options to Webform Configure Form
