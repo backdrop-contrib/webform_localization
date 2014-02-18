@@ -106,28 +106,52 @@ function _webform_localization_translate_analysis_component(&$data, &$component)
   if (!isset($component['extra']['translated_strings']) || !is_array($component['extra']['translated_strings'])) {
     return;
   }
-  // Attempt to translate select options
+  // Attempt to translate select options.
   if ($component['type'] == 'select') {
-    $item_key_lookup = array();
-    $items = explode("\n", trim($component['extra']['items']));
-    foreach ($items as $item) {
-      $item_data = explode('|', $item);
-      $item_key_lookup[$item_data[0]] = $item_data[1];
-    }
+    $item_key_lookup = _webform_localization_string_to_key($component['extra']['items']);
   }
+  // Attempt to translate grid options / questions.
+  if ($component['type'] == 'grid') {
+    $options_key_lookup = _webform_localization_string_to_key($component['extra']['options']);
+    $questions_key_lookup = _webform_localization_string_to_key($component['extra']['questions']);
+  }
+
   foreach ($component['extra']['translated_strings'] as $name) {
     $name_list = explode(':', $name);
     // Translate component name from title property.
     if ($name_list[3] == '#title') {
       $component['name'] = i18n_string($name, $component['name']);
+      continue;
     }
-    // Translate options for select elements
+    // Translate options for select elements.
     if ($component['type'] == 'select' && strpos($name_list[3], '-') !== FALSE) {
-      list ( , $key) = explode('-', $name_list[3]);
+      list (, $key) = explode('-', $name_list[3]);
       if (isset($item_key_lookup[$key])) {
         foreach ($data['table_rows'] as $index => $row) {
           if ($row[0] == $item_key_lookup[$key]) {
             $data['table_rows'][$index][0] = i18n_string($name, $row[0]);
+          }
+        }
+      }
+    }
+    // Translate options / questions for grid elements.
+    if ($component['type'] == 'grid' && $name_list[3] !== '#title') {
+      list (, $key) = explode('-', $name_list[3]);
+      if (strpos($name_list[3], 'grid_options')) {
+        if (isset($options_key_lookup[$key])) {
+          foreach ($data['table_header'] as $index => $row) {
+            if ($row == $options_key_lookup[$key]) {
+              $data['table_header'][$index] = i18n_string($name, $row);
+            }
+          }
+        }
+      }
+      if (strpos($name_list[3], 'grid_questions')) {
+        if (isset($questions_key_lookup[$key])) {
+          foreach ($data['table_rows'] as $index => $row) {
+            if (trim($row[0]) == trim($questions_key_lookup[$key])) {
+              $data['table_rows'][$index][0] = i18n_string($name, $row[0]);
+            }
           }
         }
       }
@@ -472,7 +496,7 @@ function webform_localization_delete_translate_strings($node) {
 
 /**
  * Update i18n string contexts if uuid module is enabled/disabled.
- * 
+ *
  */
 function webform_localization_uuid_update_strings($disabling_uuid = FALSE) {
   module_load_install('i18n_string');
@@ -552,3 +576,21 @@ function _webform_localization_array_key_replace(&$array, $old_key, $new_key) {
   }
   $array = array_combine($keys, $values);
 }
+
+/**
+ * Helper function to convert select / grid strings to array.
+ *
+ * @param $string_array
+ *   Array To process.
+ *
+ */
+function _webform_localization_string_to_key($string_array) {
+  $key_array = array();
+  $items = explode("\n", trim($string_array));
+  foreach ($items as $item) {
+    $item_data = explode('|', $item);
+    $key_array[$item_data[0]] = $item_data[1];
+  }
+  return $key_array;
+}
+
