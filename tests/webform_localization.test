@@ -17,7 +17,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
    * Implements setUp().
    */
   function setUp($modules = array()) {
-    $modules = array_merge($modules, array('locale', 'webform', 'webform_localization'));
+    $modules = array('translation', 'i18n', 'i18n_string', 'locale', 'webform', 'webform_localization');
     parent::setUp($modules);
 
     // We load webform test class to reuse webform and components creation functions.
