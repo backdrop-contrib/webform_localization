@@ -17,7 +17,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
    * Implements setUp().
    */
   public function setUp() {
-    parent::setUp('translation','locale','i18n','i18n_strings','webform','webform_localization');
+    parent::setUp('locale', 'i18n', 'i18n_node', 'i18n_translation', 'i18n_strings', 'webform', 'webform_localization');
 
     // We load webform test class to reuse webform and components creation functions.
     module_load_include('test', 'webform', 'tests/webform');
@@ -306,7 +306,7 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
    * Set up test.
    */
   public function setUp() {
-    parent::setUp('translation','locale','i18n','i18n_strings','webform','webform_localization');
+    parent::setUp('locale', 'i18n', 'i18n_node', 'i18n_translation', 'i18n_strings', 'webform', 'webform_localization');
 
     // Set "Webform" content type to use multilingual support with translation.
     $this->drupalGet('admin/structure/types/manage/webform');
@@ -434,7 +434,7 @@ class WebformLocalizationApiTestCase extends WebformLocalizationWebTestCase {
    * Set up test.
    */
   public function setUp() {
-    parent::setUp('translation','locale','i18n','i18n_strings','webform','webform_localization');
+    parent::setUp('locale', 'i18n', 'i18n_node', 'i18n_translation', 'i18n_strings', 'webform', 'webform_localization');
 
     // Set "Webform" content type to use multilingual support with translation.
     $this->drupalGet('admin/structure/types/manage/webform');
