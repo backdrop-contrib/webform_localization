@@ -2,6 +2,9 @@
 name = Webform Localization
 description = Enables localization features to forms and questionnaires.
 dependencies[] = webform
+dependencies[] = locale
+dependencies[] = translation
+dependencies[] = i18n
 dependencies[] = i18n_string
 core = 7.x
 package = Webform
