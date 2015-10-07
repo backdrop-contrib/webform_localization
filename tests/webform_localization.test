@@ -17,7 +17,15 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
    * Implements setUp().
    */
   public function setUp() {
-    parent::setUp('locale', 'i18n', 'entity_translation', 'i18n_node', 'i18n_translation', 'i18n_strings', 'webform', 'webform_localization');
+//  parent::setUp('locale', 'i18n', 'entity_translation', 'i18n_translation', 'translation', 'i18n_strings', 'webform', 'webform_localization');
+    parent::setUp('webform_localization');
+    $this->drupalModuleEnable('locale');
+    $this->drupalModuleEnable('i18n');
+    $this->drupalModuleEnable('entity_translation');
+    $this->drupalModuleEnable('translation');
+    $this->drupalModuleEnable('i18n_translation');
+    $this->drupalModuleEnable('i18n_strings');
+    $this->drupalModuleEnable('webform');
 
     // We load webform test class to reuse webform and components creation functions.
     module_load_include('test', 'webform', 'tests/webform');
@@ -306,7 +314,7 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
    * Set up test.
    */
   public function setUp() {
-    //parent::setUp('locale', 'i18n', 'entity_translation', 'i18n_node', 'i18n_translation', 'i18n_strings', 'webform', 'webform_localization');
+//  parent::setUp('locale', 'i18n', 'entity_translation', 'i18n_translation', 'translation', 'i18n_strings', 'webform', 'webform_localization');
     parent::setUp();
 
     // Set "Webform" content type to use multilingual support with translation.
@@ -435,7 +443,7 @@ class WebformLocalizationApiTestCase extends WebformLocalizationWebTestCase {
    * Set up test.
    */
   public function setUp() {
-    //parent::setUp('locale', 'i18n', 'entity_translation', 'i18n_node', 'i18n_translation', 'i18n_strings', 'webform', 'webform_localization');
+//  parent::setUp('locale', 'i18n', 'entity_translation', 'i18n_translation', 'translation', 'i18n_strings', 'webform', 'webform_localization');
     parent::setUp();
 
     // Set "Webform" content type to use multilingual support with translation.
