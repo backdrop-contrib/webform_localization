@@ -16,16 +16,43 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
   /**
    * Implements setUp().
    */
-  public function setUp() {
-//  parent::setUp('locale', 'i18n', 'entity_translation', 'i18n_translation', 'translation', 'i18n_strings', 'webform', 'webform_localization');
-    parent::setUp('webform_localization');
-    $this->drupalModuleEnable('locale');
-    $this->drupalModuleEnable('i18n');
-    $this->drupalModuleEnable('entity_translation');
-    $this->drupalModuleEnable('translation');
-    $this->drupalModuleEnable('i18n_translation');
-    $this->drupalModuleEnable('i18n_strings');
-    $this->drupalModuleEnable('webform');
+  public function setUp($added_modules = array()) {
+    // Enable Webform and Token module if available.
+    
+    if (module_exists('locale')) {
+      $added_modules = array_merge(array('locale'), $added_modules);
+    }
+    if (module_exists('i18n')) {
+      $added_modules = array_merge(array('i18n'), $added_modules);
+    }
+    if (module_exists('i18n_strings')) {
+      $added_modules = array_merge(array('i18n_strings'), $added_modules);
+    }
+    if (module_exists('translation')) {
+      $added_modules = array_merge(array('translation'), $added_modules);
+    }
+    if (module_exists('entity_translation')) {
+      $added_modules = array_merge(array('entity_translation'), $added_modules);
+    }
+    if (module_exists('i18n_translation')) {
+      $added_modules = array_merge(array('i18n_translation'), $added_modules);
+    }
+    if (module_exists('token')) {
+      $added_modules = array_merge(array('token'), $added_modules);
+    }
+    if (module_exists('ctools')) {
+      $added_modules = array_merge(array('ctools'), $added_modules);
+    }
+    if (module_exists('views')) {
+      $added_modules = array_merge(array('views'), $added_modules);
+    }
+    if (module_exists('webform')) {
+      $added_modules = array_merge(array('webform'), $added_modules);
+    }
+    if (module_exists('webform_localization')) {
+      $added_modules = array_merge(array('webform_localization'), $added_modules);
+    }
+    parent::setUp($added_modules);
 
     // We load webform test class to reuse webform and components creation functions.
     module_load_include('test', 'webform', 'tests/webform');
@@ -313,9 +340,8 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
   /**
    * Set up test.
    */
-  public function setUp() {
-//  parent::setUp('locale', 'i18n', 'entity_translation', 'i18n_translation', 'translation', 'i18n_strings', 'webform', 'webform_localization');
-    parent::setUp();
+  public function setUp($added_modules = array()) {
+    parent::setUp($added_modules);
 
     // Set "Webform" content type to use multilingual support with translation.
     $this->drupalGet('admin/structure/types/manage/webform');
@@ -442,9 +468,8 @@ class WebformLocalizationApiTestCase extends WebformLocalizationWebTestCase {
   /**
    * Set up test.
    */
-  public function setUp() {
-//  parent::setUp('locale', 'i18n', 'entity_translation', 'i18n_translation', 'translation', 'i18n_strings', 'webform', 'webform_localization');
-    parent::setUp();
+  public function setUp($added_modules = array()) {
+    parent::setUp($added_modules);
 
     // Set "Webform" content type to use multilingual support with translation.
     $this->drupalGet('admin/structure/types/manage/webform');
