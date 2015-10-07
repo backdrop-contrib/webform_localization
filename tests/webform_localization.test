@@ -21,44 +21,44 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
   function setUp($added_modules = array()) {
     // Enable Webform and Token module if available.
     
-    if (module_exists('webform_localization')) {
+//  if (module_exists('webform_localization')) {
       $added_modules = array_merge(array('webform_localization'), $added_modules);
-    }
-    if (module_exists('webform')) {
+//  }
+//  if (module_exists('webform')) {
       $added_modules = array_merge(array('webform'), $added_modules);
-    }
-    if (module_exists('token')) {
+//  }
+//  if (module_exists('token')) {
       $added_modules = array_merge(array('token'), $added_modules);
-    }
-    if (module_exists('views')) {
+//  }
+//  if (module_exists('views')) {
       $added_modules = array_merge(array('views'), $added_modules);
-    }
-    if (module_exists('ctools')) {
+//  }
+//  if (module_exists('ctools')) {
       $added_modules = array_merge(array('ctools'), $added_modules);
-    }
-    if (module_exists('entity_translation')) {
+//  }
+//  if (module_exists('entity_translation')) {
       $added_modules = array_merge(array('entity_translation'), $added_modules);
-    }
-    if (module_exists('i18n_translation')) {
+//  }
+//  if (module_exists('i18n_translation')) {
       $added_modules = array_merge(array('i18n_translation'), $added_modules);
-    }
-    if (module_exists('i18n_strings')) {
+//  }
+//  if (module_exists('i18n_strings')) {
       $added_modules = array_merge(array('i18n_strings'), $added_modules);
-    }
-    if (module_exists('i18n')) {
+//    }
+//    if (module_exists('i18n')) {
       $added_modules = array_merge(array('i18n'), $added_modules);
-    }
-    if (module_exists('translation')) {
+//    }
+//    if (module_exists('translation')) {
       $added_modules = array_merge(array('translation'), $added_modules);
-    }
-    if (module_exists('locale')) {
+//    }
+//    if (module_exists('locale')) {
       $added_modules = array_merge(array('locale'), $added_modules);
-    }
-    if (module_exists('block')) {
+//    }
+//    if (module_exists('block')) {
       $added_modules = array_merge(array('block'), $added_modules);
-    }
+//    }
     parent::setUp($added_modules);
-    debug($added_modules);
+//    debug($added_modules);
 
     // We load webform test class to reuse webform and components creation functions.
     module_load_include('test', 'webform', 'tests/webform');
@@ -67,7 +67,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
     /* Reset the permissions cache prior to calling drupalCreateUser
      * see notes here: https://api.drupal.org/comment/28739#comment-28739
      */
-    drupal_flush_all_caches();
+//    drupal_flush_all_caches();
     $this->checkPermissions(array(), TRUE);
     // Setup users.
     $this->adminuser = $this->drupalCreateUser(array('bypass node access', 'administer nodes', 'administer languages', 'administer content types', 'administer blocks', 'access administration pages', 'translate content', 'create webform content',
