@@ -9,27 +9,32 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
   // Webform test class instance.
   public $wtc;
   // Users.
-  public $admin_user;
+  public $adminuser;
   public $translator;
-  public $normal_user;
+  public $normaluser;
+  public $perms;
+  protected $profile = 'testing';
 
   /**
    * Implements setUp().
    */
-  public function setUp($added_modules = array()) {
+  function setUp($added_modules = array()) {
     // Enable Webform and Token module if available.
     
-    if (module_exists('locale')) {
-      $added_modules = array_merge(array('locale'), $added_modules);
+    if (module_exists('webform_localization')) {
+      $added_modules = array_merge(array('webform_localization'), $added_modules);
     }
-    if (module_exists('i18n')) {
-      $added_modules = array_merge(array('i18n'), $added_modules);
+    if (module_exists('webform')) {
+      $added_modules = array_merge(array('webform'), $added_modules);
     }
-    if (module_exists('i18n_strings')) {
-      $added_modules = array_merge(array('i18n_strings'), $added_modules);
+    if (module_exists('token')) {
+      $added_modules = array_merge(array('token'), $added_modules);
     }
-    if (module_exists('translation')) {
-      $added_modules = array_merge(array('translation'), $added_modules);
+    if (module_exists('views')) {
+      $added_modules = array_merge(array('views'), $added_modules);
+    }
+    if (module_exists('ctools')) {
+      $added_modules = array_merge(array('ctools'), $added_modules);
     }
     if (module_exists('entity_translation')) {
       $added_modules = array_merge(array('entity_translation'), $added_modules);
@@ -37,22 +42,23 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
     if (module_exists('i18n_translation')) {
       $added_modules = array_merge(array('i18n_translation'), $added_modules);
     }
-    if (module_exists('token')) {
-      $added_modules = array_merge(array('token'), $added_modules);
+    if (module_exists('i18n_strings')) {
+      $added_modules = array_merge(array('i18n_strings'), $added_modules);
     }
-    if (module_exists('ctools')) {
-      $added_modules = array_merge(array('ctools'), $added_modules);
+    if (module_exists('i18n')) {
+      $added_modules = array_merge(array('i18n'), $added_modules);
     }
-    if (module_exists('views')) {
-      $added_modules = array_merge(array('views'), $added_modules);
+    if (module_exists('translation')) {
+      $added_modules = array_merge(array('translation'), $added_modules);
     }
-    if (module_exists('webform')) {
-      $added_modules = array_merge(array('webform'), $added_modules);
+    if (module_exists('locale')) {
+      $added_modules = array_merge(array('locale'), $added_modules);
     }
-    if (module_exists('webform_localization')) {
-      $added_modules = array_merge(array('webform_localization'), $added_modules);
+    if (module_exists('block')) {
+      $added_modules = array_merge(array('block'), $added_modules);
     }
     parent::setUp($added_modules);
+    debug($added_modules);
 
     // We load webform test class to reuse webform and components creation functions.
     module_load_include('test', 'webform', 'tests/webform');
@@ -61,9 +67,10 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
     /* Reset the permissions cache prior to calling drupalCreateUser
      * see notes here: https://api.drupal.org/comment/28739#comment-28739
      */
-    $this->checkPermissions(array('access content'), TRUE);
+    drupal_flush_all_caches();
+    $this->checkPermissions(array(), TRUE);
     // Setup users.
-    $this->admin_user = $this->drupalCreateUser(array('bypass node access', 'administer nodes', 'administer languages', 'administer content types', 'administer blocks', 'access administration pages', 'translate content', 'create webform content',
+    $this->adminuser = $this->drupalCreateUser(array('bypass node access', 'administer nodes', 'administer languages', 'administer content types', 'administer blocks', 'access administration pages', 'translate content', 'create webform content',
           'edit any webform content',
           'access all webform results',
           'edit all webform submissions',
@@ -88,13 +95,13 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
      * see notes here: https://api.drupal.org/comment/28739#comment-28739
      */
     $this->checkPermissions(array('access content'), TRUE);
-    $this->normal_user = $this->drupalCreateUser(array('access content', 'edit own webform submissions'));
+    $this->normaluser = $this->drupalCreateUser(array('access content', 'edit own webform submissions'));
 
     // Fix for reuse of webform test class.
-    $this->wtc->webform_users['admin'] = $this->admin_user;
+    $this->wtc->webform_users['admin'] = $this->adminuser;
     $this->wtc->webform_users['admin']->profile_gender = array('Female', 'Male');
 
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminuser);
 
     // Add languages.
     $this->addLanguage('en');
@@ -340,7 +347,7 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
   /**
    * Set up test.
    */
-  public function setUp($added_modules = array()) {
+  function setUp($added_modules = array()) {
     parent::setUp($added_modules);
 
     // Set "Webform" content type to use multilingual support with translation.
@@ -355,7 +362,7 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
    * Test creating a webform and enabling localization by string translation
    */
   function testWebformLocalizationStringTranslation() {
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminuser);
     /**
      * Create the Webform test node, and enable
      * localization by string translation feature
@@ -468,7 +475,7 @@ class WebformLocalizationApiTestCase extends WebformLocalizationWebTestCase {
   /**
    * Set up test.
    */
-  public function setUp($added_modules = array()) {
+  function setUp($added_modules = array()) {
     parent::setUp($added_modules);
 
     // Set "Webform" content type to use multilingual support with translation.
@@ -483,7 +490,7 @@ class WebformLocalizationApiTestCase extends WebformLocalizationWebTestCase {
    * Test submissions API function with webform localization presence.
    */
   function testWebformLocalizationApi() {
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminuser);
     $node = $this->createWebformForm();
     /**
      * Enables localization by string translation and reuse the single webform
