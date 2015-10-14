@@ -100,7 +100,6 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
 
     // Fix for reuse of webform test class.
     $this->wtc->webform_users['admin'] = $this->adminuser;
-    $this->wtc->webform_users['admin']->profile_gender = array('Female', 'Male');
 
     $this->drupalLogin($this->adminuser);
 
