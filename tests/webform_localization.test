@@ -37,9 +37,6 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
     if (module_exists('ctools') || $drupalorg ) {
       $added_modules = array_merge(array('ctools'), $added_modules);
     }
-    if (module_exists('entity_translation') || $drupalorg ) {
-      $added_modules = array_merge(array('entity_translation'), $added_modules);
-    }
     if (module_exists('i18n_translation') || $drupalorg ) {
       $added_modules = array_merge(array('i18n_translation'), $added_modules);
     }
