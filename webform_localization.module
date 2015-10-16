@@ -679,6 +679,13 @@ function webform_localization_get_config($nid, $clear_cache = FALSE) {
     unset($webform_properties['roles']);
     unset($webform_properties['emails']);
     unset($webform_properties['record_exists']);
+
+    // if webform_uuid is being used since $component['nid'] is really a UUID get the nid
+    if (module_exists('webform_uuid') && variable_get('webform_localization_using_uuid', FALSE)) {
+      $record = entity_get_id_by_uuid('node', array($nid));
+      $nid = (!empty($record)) ? array_pop($record) : $nid;
+    }
+
     // Select webform localization options that match this node ID.
     $options = db_select('webform_localization')
             ->fields('webform_localization')
