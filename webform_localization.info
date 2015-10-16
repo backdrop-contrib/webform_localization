@@ -16,6 +16,7 @@ dependencies[] = webform (4.11)
 test_dependencies[] = locale
 test_dependencies[] = block
 test_dependencies[] = translation
+test_dependencies[] = token
 test_dependencies[] = i18n
 test_dependencies[] = variable
 test_dependencies[] = i18n_translation
