@@ -19,7 +19,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
    * Implements setUp().
    */
   function setUp($added_modules = array()) {
-    // Enable Webform and Token module if available.
+    // Set the following variable to FALSE if you're testing locally.
     $drupalorg = TRUE;
     
     if (module_exists('webform_localization') || $drupalorg) {
