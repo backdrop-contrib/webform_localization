@@ -373,6 +373,21 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
       $form['submission']['redirection']['redirect_url']['#default_value'] = $form['#node']->webform['redirect_url'];
     }
     $form['advanced']['submit_text']['#default_value'] = $form['#node']->webform['submit_text'];
+    // Add friendly translation link
+    if (module_exists('webform_uuid') && variable_get('webform_localization_using_uuid', FALSE)) {
+      $name = 'webform:' . $form['#node']->uuid . ':confirmation';
+    }
+    else {
+      $name = 'webform:' . $form['#node']->nid . ':confirmation';
+    }
+    $string_source = i18n_string_get_string($name);
+    if (isset($string_source->lid) && $string_source->lid != FALSE) {
+      $link =  l(t('here'), 'admin/config/regional/translate/edit/' . $string_source->lid, array('query' => drupal_get_destination()));
+      $description = t(' Click !here to translate this string.', array('!here' => $link));
+    }
+    else {
+      $description = t(' <i>The message must be filled in before it can be translated.</i>');
+    }
   }
 
   $single_webform = 0;
@@ -805,5 +820,146 @@ function webform_localization_modules_enabled($modules) {
   if (in_array('uuid', $modules)) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
     webform_localization_uuid_update_strings(FALSE);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add related translations to translation form.
+ */
+function webform_localization_form_i18n_string_locale_translate_edit_form_alter(&$form, &$form_state, $form_id) {
+  if ($form['textgroup']['#value'] == 'webform') {
+    if (isset($form['context']['#markup']) && preg_match('/#title/', $form['context']['#markup'])) {
+      list($id, $cid, $name) = explode(':', $form['context']['#markup']);
+      $form['#submit'][] = 'webform_localization_i18n_string_locale_translate_edit_form_submit';
+      $rel_key = 'webform:' . $id . ':' . $cid . '%';
+      $related = db_query('SELECT lid, source, context, textgroup, location FROM {locales_source} WHERE location LIKE :key', array(':key' => $rel_key));
+      $form['items'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Related strings'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        '#weight' => 2,
+      );
+      foreach ($related as $source) {
+        if ($source->context != $form['context']['#markup']) {
+          $lid = $source->lid;
+          // Add original text to the top and some values for form altering.
+          $form['items'][$lid]['original'] = array(
+            '#type'  => 'item',
+            '#title' => t('Original text'),
+            '#markup' => check_plain(wordwrap($source->source, 0)),
+          );
+          if (!empty($source->context)) {
+            $form['items'][$lid]['context'] = array(
+              '#type' => 'item',
+              '#title' => t('Context'),
+              '#markup' => check_plain($source->context),
+            );
+          }
+          $form['items'][$lid]['textgroup'] = array(
+            '#type'  => 'value',
+            '#value' => $source->textgroup,
+          );
+          $form['items'][$lid]['location'] = array(
+            '#type'  => 'value',
+            '#value' => $source->location
+          );
+
+          $languages = language_list();
+          // We don't need the default language value, that value is in $source.
+          $omit = $source->textgroup == 'default' ? 'en' : i18n_string_source_language();
+          unset($languages[($omit)]);
+          $form['items'][$lid]['translations-' . $lid] = array('#tree' => TRUE);
+          // Approximate the number of rows to use in the default textarea.
+          $rows = min(ceil(str_word_count($source->source) / 12), 10);
+          foreach ($languages as $langcode => $language) {
+            $form['items'][$lid]['translations-' . $lid][$langcode] = array(
+              '#type' => 'textarea',
+              '#title' => t($language->name),
+              '#rows' => $rows,
+              '#default_value' => '',
+            );
+          }
+
+          // Fetch translations and fill in default values in the form.
+          $result = db_query("SELECT DISTINCT translation, language FROM {locales_target} WHERE lid = :lid AND language <> :omit", array(':lid' => $lid, ':omit' => $omit));
+          foreach ($result as $translation) {
+            $form['items'][$lid]['translations-' . $lid][$translation->language]['#default_value'] = $translation->translation;
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Submit handler for translations form.
+ */
+function webform_localization_i18n_string_locale_translate_edit_form_submit($form, &$form_state) {
+  foreach($form_state['values'] as $key=>$value) {
+    if (preg_match("/translations-(.*)/", $key, $lid)) {
+      foreach ($value as $lang=>$translation) {
+        $existing = db_query("SELECT translation FROM {locales_target} WHERE lid = :lid AND language = :language", array(':lid' => $lid[1], ':language' => $lang))->fetchField();
+        if (!empty($translation)) {
+          if (!empty($existing)) {
+            db_update('locales_target')
+              ->fields(array(
+                'translation' => $translation,
+                'i18n_status' => I18N_STRING_STATUS_CURRENT,
+              ))
+              ->condition('lid', $lid[1])
+              ->condition('language', $lang)
+              ->execute();
+          }
+          else {
+            db_insert('locales_target')
+              ->fields(array(
+                'lid' => $lid[1],
+                'translation' => $translation,
+                  'language' => $lang,
+              ))
+              ->execute();
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_webform_components_form().
+ *
+ * Adds a translate link to each webform component.
+ */
+function webform_localization_preprocess_webform_components_form(&$variables) {
+  $header = $variables['header'];
+  $form = $variables['form'];
+  $rows = $variables['rows'];
+  $node = $form['#node'];
+
+  $webform_localization_options = webform_localization_get_config($form['#node']->webform['nid']);
+  $row_data = array();
+  if ($webform_localization_options['expose_strings']) {
+    // Change colspan of header and footer
+    $footer = array_pop($rows);
+    $header[5]['colspan'] = 4;
+    $footer['data'][5]['colspan'] = 4;
+    // Add translate link to rows
+    foreach ($rows as $key=>$row) {
+      $row_data[$key] = $row;
+      if (isset($row['data-cid'])) {
+        $name = 'webform:' . $node->uuid . ':' . $row['data-cid'] . ':' . '#title';
+        $string_source = i18n_string_get_string($name);
+        if (isset($string_source->lid)) {
+          $row_data[$key]['data'][] = l(t('Translate'), 'admin/config/regional/translate/edit/' . $string_source->lid, array('query' => drupal_get_destination()));
+        }
+      }
+    }
+    $variables['rows'] = $row_data;
+    $variables['rows'][] = $footer;
+    $variables['header'] = $header;
+    $variables['form'] = $form;
   }
 }
