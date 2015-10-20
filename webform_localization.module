@@ -982,7 +982,7 @@ function webform_localization_js_alter(&$javascript) {
     }
 
     //only react when we are not on the source node
-    if($node->nid != $node->tnid){
+    if($node->nid != $node->tnid && $node->tnid > 0) {
       // Gets webform localization options that match this node ID.
       $webform_localization_options = webform_localization_get_config($node->tnid);
 
