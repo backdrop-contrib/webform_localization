@@ -53,53 +53,54 @@ function webform_localization_i18n_string_info() {
  * Refresh callback that regenerates all the translatable poperties of the
  * components of the matching webforms configuration.
  */
-function webform_localization_i18n_string_refresh() {
+function webform_localization_i18n_string_refresh($group) {
+  if ($group == 'webform') {
+    module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
 
-  module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+    // In case updating before UUID support.
+    if (module_exists('uuid') && !variable_get('webform_localization_using_uuid', FALSE)) {
+      webform_localization_uuid_update_strings(FALSE);
+    }
 
-  // In case updating before UUID support.
-  if (module_exists('uuid') && !variable_get('webform_localization_using_uuid', FALSE)) {
-    webform_localization_uuid_update_strings(FALSE);
+    // Get components configured as translatable.
+    $query = db_select('webform_component', 'wc');
+    $query->fields('wc');
+    $query->condition('wl.expose_strings', 0, '>');
+    $query->innerJoin('webform_localization', 'wl', 'wc.nid = wl.nid');
+    $components = $query->execute()->fetchAll();
+
+    foreach ($components as $component) {
+      $component = (array) $component;
+      $component['extra'] = unserialize($component['extra']);
+
+      webform_localization_component_update_translation_strings($component);
+
+      $component['extra'] = serialize($component['extra']);
+      drupal_write_record('webform_component', $component, array('nid', 'cid'));
+    }
+    // Get emails configured as translatable.
+    $query = db_select('webform_localization', 'wl');
+    $query->fields('wl', array('nid'));
+    $query->condition('wl.expose_strings', 0, '>');
+    $nid_list = $query->execute()->fetchAllAssoc('nid');
+    // @todo: Find a more eficient way to manage webform translatable properties.
+    $nodes = node_load_multiple(array_keys($nid_list));
+    module_load_include('inc', 'webform_localization', 'includes/webform_localization.sync');
+    foreach ($nid_list as $nid => $value) {
+      $emails = _webform_localization_emails_load($nid);
+      webform_localization_emails_translation_string_refresh($emails, $nid);
+      $node = $nodes[$nid];
+      webform_localization_translate_strings($node, TRUE);
+    }
+    /**
+     *  NOTE: Delete string for webforms that has disabled i18n translation.
+     *  This is the only moment when we deleted translation for disabled webforms.
+     *  This way we provide the feature to temporally disable the webform i18n
+     *  string without losing custom translated texts.
+     */
+    webform_localization_delete_all_strings();
+    return TRUE;
   }
-
-  // Get components configured as translatable.
-  $query = db_select('webform_component', 'wc');
-  $query->fields('wc');
-  $query->condition('wl.expose_strings', 0, '>');
-  $query->innerJoin('webform_localization', 'wl', 'wc.nid = wl.nid');
-  $components = $query->execute()->fetchAll();
-
-  foreach ($components as $component) {
-    $component = (array) $component;
-    $component['extra'] = unserialize($component['extra']);
-
-    webform_localization_component_update_translation_strings($component);
-
-    $component['extra'] = serialize($component['extra']);
-    drupal_write_record('webform_component', $component, array('nid', 'cid'));
-  }
-  // Get emails configured as translatable.
-  $query = db_select('webform_localization', 'wl');
-  $query->fields('wl', array('nid'));
-  $query->condition('wl.expose_strings', 0, '>');
-  $nid_list = $query->execute()->fetchAllAssoc('nid');
-  // @todo: Find a more eficient way to manage webform translatable properties.
-  $nodes = node_load_multiple(array_keys($nid_list));
-  module_load_include('inc', 'webform_localization', 'includes/webform_localization.sync');
-  foreach ($nid_list as $nid => $value) {
-    $emails = _webform_localization_emails_load($nid);
-    webform_localization_emails_translation_string_refresh($emails, $nid);
-    $node = $nodes[$nid];
-    webform_localization_translate_strings($node, TRUE);
-  }
-  /**
-   *  NOTE: Delete string for webforms that has disabled i18n translation.
-   *  This is the only moment when we deleted translation for disabled webforms.
-   *  This way we provide the feature to temporally disable the webform i18n
-   *  string without losing custom translated texts.
-   */
-  webform_localization_delete_all_strings();
-  return TRUE;
 }
 
 /**
