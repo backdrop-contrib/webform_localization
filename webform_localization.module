@@ -549,9 +549,12 @@ function _webform_localization_webform_email_edit_form_submit($form, &$form_stat
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.sync');
     webform_localization_emails_sync($node->nid);
   }
-  if ($webform_localization_options['expose_strings']) {
-    module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
-    webform_localization_emails_update_translation_string($form_state['values'] + array('node' => $node));
+  if(isset($form_state['values']['node'])) {
+  // Above isset avoids problem when using entity_translation. see: https://www.drupal.org/node/2482521
+    if ($webform_localization_options['expose_strings']) {
+      module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+      webform_localization_emails_update_translation_string($form_state['values'] + array('node' => $node));
+    }
   }
 }
 
@@ -575,9 +578,12 @@ function _webform_localization_webform_email_delete_form_submit($form, &$form_st
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.sync');
     webform_localization_emails_sync($node->nid);
   }
-  if ($webform_localization_options['expose_strings']) {
-    module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
-    webform_localization_emails_delete_translation_string($form_state['values']['email']['eid'], $node->nid);
+  if(isset($form_state['values']['node'])) {
+  // Above isset avoids problem when using entity_translation. see: https://www.drupal.org/node/2482521
+    if ($webform_localization_options['expose_strings']) {
+      module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+      webform_localization_emails_delete_translation_string($form_state['values']['email']['eid'], $node->nid);
+    }
   }
 }
 
