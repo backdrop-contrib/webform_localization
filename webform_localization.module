@@ -964,3 +964,31 @@ function webform_localization_preprocess_webform_components_form(&$variables) {
     $variables['form'] = $form;
   }
 }
+
+/**
+ * Implements hook_js_alter().
+ */
+function webform_localization_js_alter(&$javascript) {
+  //only react on webform nodes
+  if ($node = menu_get_object()) {
+    if (!isset($node->type) || !in_array($node->type, webform_variable_get('webform_node_types'))) {
+      return FALSE;
+    }
+
+    //only react when we are not on the source node
+    if($node->nid != $node->tnid){
+      // Gets webform localization options that match this node ID.
+      $webform_localization_options = webform_localization_get_config($node->tnid);
+
+      // Only react when keep a single webform across a translation set.
+      if ($webform_localization_options['single_webform'] > 0) {
+        foreach ($javascript['settings']['data'] as &$setting) {
+          if (isset($setting['webform']['conditionals']['webform-client-form-' . $node->tnid])) {
+            $setting['webform']['conditionals']['webform-client-form-' . $node->nid] = $setting['webform']['conditionals']['webform-client-form-' . $node->tnid];
+            unset($setting['webform']['conditionals']['webform-client-form-' . $node->tnid]);
+          }
+        }
+      }
+    }
+  }
+}
