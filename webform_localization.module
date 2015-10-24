@@ -104,6 +104,47 @@ function webform_localization_i18n_string_refresh($group) {
 }
 
 /**
+ * Load a component file into memory.
+ *
+ * @see webform_component_include().
+ *
+ * @param $component_type
+ *   The string machine name of a component.
+ */
+function webform_localization_component_include($component_type) {
+  static $included = array();
+
+  // No need to load components that have already been added once.
+  if (!isset($included[$component_type])) {
+    $included[$component_type] = TRUE;
+    module_load_include('inc', 'webform_localization', 'components/' . $component_type);
+  }
+}
+
+/**
+ * Invoke a component callback.
+ *
+ * @see webform_component_invoke().
+ *
+ * @param $type
+ *   The component type as a string.
+ * @param $callback
+ *   The callback to execute.
+ * @param ...
+ *   Any additional parameters required by the $callback.
+ */
+function webform_localization_component_invoke($type, $callback) {
+  $args = func_get_args();
+  $type = array_shift($args);
+  $callback = array_shift($args);
+  $function = '_webform_localization_' . $callback . '_' . $type;
+  webform_localization_component_include($type);
+  if (function_exists($function)) {
+    return call_user_func_array($function, $args);
+  }
+}
+
+/**
  * Implements hook_webform_component_insert().
  */
 function webform_localization_webform_component_insert($component) {
@@ -350,8 +391,50 @@ function webform_localization_webform_analysis_component_data_alter(&$data, $nod
   $wl_options = webform_localization_get_config($node->nid);
   // Translate the translatable properties.
   if ($wl_options['expose_strings']) {
-    module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
-    _webform_localization_translate_analysis_component($data, $component);
+    // Translate component name, this is not a component spesific property
+    foreach ($component['extra']['translated_strings'] as $name) {
+      $name_list = explode(':', $name);
+      // Translate component name from title property.
+      if ($name_list[3] == '#title') {
+        $component['name'] = i18n_string($name, $component['name']);
+        break;
+      }
+    }
+    // Translate data array.
+    $result = webform_localization_component_invoke($component['type'], 'analysis_data', $data, $node, $component);
+    if (!empty($result)) {
+      $data = $result;
+    }
+  }
+}
+
+/**
+ * Implements hook_webform_csv_header_alter().
+ */
+function webform_localization_webform_csv_header_alter(&$header, $component) {
+  // Gets webform localization options that match this node ID.
+  $wl_options = webform_localization_get_config($component['nid']);
+  // Translate the translatable properties.
+  if ($wl_options['expose_strings']) {
+    $result = webform_localization_component_invoke($component['type'], 'csv_header', $header, $component);
+    if (!empty($result)) {
+      $header = $result;
+    }
+  }
+}
+
+/**
+ * Implements hook_webform_csv_data_alter().
+ */
+function webform_localization_webform_csv_data_alter(&$data, $component, $submission) {
+  // Gets webform localization options that match this node ID.
+  $wl_options = webform_localization_get_config($component['nid']);
+  // Translate the translatable properties.
+  if ($wl_options['expose_strings']) {
+    $result = webform_localization_component_invoke($component['type'], 'csv_data', $data, $component, $submission);
+    if (!empty($result)) {
+      $data = $result;
+    }
   }
 }
 
