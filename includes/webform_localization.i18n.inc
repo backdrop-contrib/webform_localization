@@ -83,7 +83,7 @@ function _webform_localization_translate_component(&$element, $component) {
               $current_element['#' . $property] = i18n_string($name, $current_element['#' . $property], array('format' => I18N_STRING_FILTER_XSS));
             }
             else {
-              $current_element['#' . $property] = i18n_string($name, $current_element['#' . $property]);
+              $current_element['#' . $property] = i18n_string($name, $current_element['#' . $property], array('format' => I18N_STRING_FILTER_XSS));
             }
           }
         }
