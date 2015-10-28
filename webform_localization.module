@@ -197,8 +197,6 @@ function webform_localization_webform_component_presave(&$component) {
   if ($wl_options['expose_strings']) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
     webform_localization_component_update_translation_strings($component);
-    $component['extra'] = serialize($component['extra']);
-    drupal_write_record('webform_component', $component, array('nid', 'cid'));
   }
 
   if ($wl_options['sync_components'] && _webform_localization_sync()) {
