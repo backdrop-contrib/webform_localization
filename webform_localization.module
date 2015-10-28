@@ -235,11 +235,14 @@ function webform_localization_webform_component_delete($component) {
     // Get all versions of the node.
     $node = node_load($component['nid']);
     $translations = translation_node_get_translations($node->tnid);
-    unset($translations[$node->language]);
-    foreach ($translations as $trans_c) {
-      $component_version = webform_localization_component_load($trans_c->nid, $component['cid']);
-      webform_component_delete($trans_c, $component_version);
+    if ($translations) {
+      unset($translations[$node->language]);
+      foreach ($translations as $trans_c) {
+        $component_version = webform_localization_component_load($trans_c->nid, $component['cid']);
+        webform_component_delete($trans_c, $component_version);
+      }
     }
+
     // Turn On Sync.
     _webform_localization_sync(TRUE);
   }
