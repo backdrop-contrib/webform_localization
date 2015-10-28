@@ -452,7 +452,8 @@ function webform_localization_webform_csv_data_alter(&$data, $component, $submis
  */
 function webform_localization_form_webform_configure_form_alter(&$form, &$form_state, $form_id) {
 
-  $enabled_languages = language_list('enabled');
+  $enabled_languages = locale_language_list('name'); //see https://api.drupal.org/comment/52443#comment-52443
+ 
   // Gets webform localization options that match this node ID.
   $webform_localization_options = webform_localization_get_config($form['nid']['#value']);
 
@@ -1037,7 +1038,8 @@ function webform_localization_preprocess_webform_components_form(&$variables) {
   $rows = $variables['rows'];
   $node = $form['#node'];
 
-  $enabled_languages = language_list('enabled');
+  $enabled_languages = locale_language_list('name');
+ 
   $webform_localization_options = webform_localization_get_config($form['#node']->webform['nid']);
   $row_data = array();
   if ($webform_localization_options['expose_strings'] && sizeof($enabled_languages) > 1) {
