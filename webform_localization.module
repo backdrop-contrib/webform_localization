@@ -662,7 +662,7 @@ function webform_localization_form_webform_email_delete_form_alter(&$form, &$for
  */
 function _webform_localization_webform_email_delete_form_submit($form, &$form_state) {
 
-  $node = $form['#node'];
+  $node = $form['node']['#value'];
   $webform_localization_options = webform_localization_get_config($node->nid);
   if ($webform_localization_options['sync_emails']) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.sync');
