@@ -479,11 +479,12 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
     $string_source = i18n_string_get_string($name);
     if (isset($string_source->lid) && $string_source->lid != FALSE) {
       $link =  l(t('here'), 'admin/config/regional/translate/edit/' . $string_source->lid, array('query' => drupal_get_destination()));
-      $description = t(' Click !here to translate this string.', array('!here' => $link));
+      $description = t('Click !here to translate this string.', array('!here' => $link));
     }
     else {
-      $description = t(' <i>The message must be filled in before it can be translated.</i>');
+      $description = t('<i>The message must be filled in before it can be translated.</i>');
     }
+    $form['submission']['confirmation']['#description'] .= ' ' . $description;
   }
 
   $single_webform = 0;
