@@ -55,6 +55,11 @@ function webform_localization_i18n_string_info() {
  */
 function webform_localization_i18n_string_refresh($group) {
   if ($group == 'webform') {
+    global $language;
+    $languages = language_list();
+    $source_language = $languages[i18n_string_source_language()];
+    // Refresh the strings using source language.
+    $language = $source_language;
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
 
     // In case updating before UUID support.
