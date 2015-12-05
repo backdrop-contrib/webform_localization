@@ -27,6 +27,7 @@
  */
 function _webform_localization_translate_component(&$element, $component) {
   if (isset($component['extra']['translated_strings']) && is_array($component['extra']['translated_strings'])) {
+    $node = !empty($component['nid']) ? node_load($component['nid']) : NULL;
     foreach ($component['extra']['translated_strings'] as $name) {
       $name_list = explode(':', $name);
       $current_element = &$element;
@@ -54,7 +55,13 @@ function _webform_localization_translate_component(&$element, $component) {
         // If property is array, we extract the key from the property.
         list ($property, $key) = explode('-', $property);
         if (isset($current_element['#' . $property][$key])) {
-          $current_element['#' . $property][$key] = i18n_string($name, $current_element['#' . $property][$key], array('sanitize' => FALSE));
+          $text = i18n_string($name, $current_element['#' . $property][$key], array('sanitize' => FALSE));
+          if (module_exists('token')) {
+            $current_element['#' . $property][$key] = webform_replace_tokens($text, $node);
+          }
+          else {
+            $current_element['#' . $property][$key] = $text;
+          }
         }
       }
       else {
@@ -63,11 +70,23 @@ function _webform_localization_translate_component(&$element, $component) {
           $option_group = str_replace('/-', '', $name_list[4]);
           // If it's a element.
           if (isset($name_list[5])) {
-            $current_element['#' . $property][$option_group][$name_list[5]] = i18n_string($name, $current_element['#' . $property][$option_group][$name_list[5]]);
+            $text = i18n_string($name, $current_element['#' . $property][$option_group][$name_list[5]]);
+            if (module_exists('token')) {
+              $current_element['#' . $property][$option_group][$name_list[5]] = webform_replace_tokens($text, $node);
+            }
+            else {
+              $current_element['#' . $property][$key] = $text;
+            }
           }
           else {
             // If it's a option group we translate the key.
-            $translated_option_group = i18n_string($name, $option_group);
+            $text = i18n_string($name, $option_group);
+            if (module_exists('token')) {
+              $translated_option_group = webform_replace_tokens($text, $node);
+            }
+            else {
+              $translated_option_group = $text;
+            }
             if ($translated_option_group != $option_group) {
               _webform_localization_array_key_replace($current_element['#' . $property], $option_group, $translated_option_group);
             }
@@ -77,13 +96,19 @@ function _webform_localization_translate_component(&$element, $component) {
           // Else we can treat the property as string.
           if (isset($current_element['#' . $property])) {
             if ($property == 'markup' && $current_element['#type'] == 'markup') {
-              $current_element['#' . $property] = i18n_string($name, $current_element['#' . $property], array('format' => $current_element['#format']));
+              $text = i18n_string($name, $current_element['#' . $property], array('format' => $current_element['#format']));
             }
             elseif ($property == 'description') {
-              $current_element['#' . $property] = i18n_string($name, $current_element['#' . $property], array('format' => I18N_STRING_FILTER_XSS));
+              $text = i18n_string($name, $current_element['#' . $property], array('format' => I18N_STRING_FILTER_XSS));
             }
             else {
-              $current_element['#' . $property] = i18n_string($name, $current_element['#' . $property], array('format' => I18N_STRING_FILTER_XSS));
+              $text = i18n_string($name, $current_element['#' . $property]);
+            }
+            if (module_exists('token')) {
+              $current_element['#' . $property] = webform_replace_tokens($text, $node);
+            }
+            else {
+              $current_element['#' . $property] = $text;
             }
           }
         }
