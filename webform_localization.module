@@ -1148,3 +1148,22 @@ function webform_localization_js_alter(&$javascript) {
     }
   }
 }
+
+/**
+ * Implements hook_entitycache_node_load().
+ */
+function webform_localization_entitycache_node_load($nodes) {
+  $webform_types = webform_variable_get('webform_node_types');
+  foreach ($nodes as $nid => &$node) {
+    if (in_array($node->type, $webform_types)) {
+      // Gets webform localization options that match this node ID.
+      $wl_options = webform_localization_get_config($nid);
+      if ($wl_options['expose_strings']) {
+        module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
+        // Translate custom strings.
+        webform_localization_translate_strings($node);
+        webform_localization_email_translate_strings($node);
+      }
+    }
+  }
+}
