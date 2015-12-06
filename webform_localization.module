@@ -967,6 +967,20 @@ function webform_localization_form_i18n_string_locale_translate_edit_form_alter(
       $form['#submit'][] = 'webform_localization_i18n_string_locale_translate_edit_form_submit';
       $rel_key = 'webform:' . $id . ':' . $cid . '%';
       $related = db_query('SELECT lid, source, context, textgroup, location FROM {locales_source} WHERE location LIKE :key', array(':key' => $rel_key));
+
+      $langs_installed = language_list();
+
+      $langs_enabled = language_list('enabled');
+      $langs_enabled = $langs_enabled[1];
+
+      if(isset($form['translations'])){
+        foreach($form['translations'] as $key => $value){
+          if(array_key_exists($key, $langs_installed) && !array_key_exists($key, $langs_enabled)){
+            unset($form['translations'][$key]);
+          }
+        }
+      }
+
       $form['items'] = array(
         '#type' => 'fieldset',
         '#title' => t('Related strings'),
@@ -999,7 +1013,7 @@ function webform_localization_form_i18n_string_locale_translate_edit_form_alter(
             '#value' => $source->location
           );
 
-          $languages = language_list();
+          $languages = $langs_enabled;
           // We don't need the default language value, that value is in $source.
           $omit = $source->textgroup == 'default' ? 'en' : i18n_string_source_language();
           unset($languages[($omit)]);
