@@ -381,7 +381,7 @@ function webform_localization_webform_component_render_alter(&$element, $compone
   if ($wl_options['expose_strings']) {
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
     _webform_localization_translate_component($element, $component);
-    if (!empty($element['#title'])) {
+    if (!empty($element['#title']) && webform_component_feature($component['type'], 'placeholder')) {
       $name = webform_localization_i18n_string_name($component['nid'], $component['cid'], '#title');
       $element['#attributes']['placeholder'] = i18n_string($name, $element['#title']);
     }
