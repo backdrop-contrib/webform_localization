@@ -205,19 +205,24 @@ function webform_localization_webform_component_presave(&$component) {
   }
 
   if ($wl_options['sync_components'] && _webform_localization_sync()) {
-    // Turn Off Sync.
-    _webform_localization_sync(FALSE);
-    module_load_include('inc', 'webform_localization', 'includes/webform_localization.component.sync');
-    // Get all versions of the component across all translations.
-    $translations = webform_localization_component_get_translations($component);
-    unset($translations[$component['nid']]);
-    // Sync the changed component with it's translations versions.
-    webform_localization_component_sync($component, $translations);
-    foreach ($translations as $trans_c) {
-      webform_component_update($trans_c);
+    $test_node = node_load($component['nid']);
+    if ($test_node->tnid > 0) {
+      // Turn Off Sync.
+      _webform_localization_sync(FALSE);
+      module_load_include('inc', 'webform_localization', 'includes/webform_localization.component.sync');
+      // Get all versions of the component across all translations.
+      $translations = webform_localization_component_get_translations($component);
+      unset($translations[$component['nid']]);
+      // Sync the changed component with it's translations versions.
+      webform_localization_component_sync($component, $translations);
+      foreach ($translations as $trans_c) {
+        webform_component_update($trans_c);
+      }
+      // Turn On Sync.
+      _webform_localization_sync(TRUE);
+    } else {
+      debug('configuration error: webform_localization_sync enabled AND Keep a single webform across a translation set. but no tnid, to resolve this either disable <Keep a single webform across a translation set> by unchecking this option, or enable node translation on the webform',t('debug'));
     }
-    // Turn On Sync.
-    _webform_localization_sync(TRUE);
   }
 }
 
