@@ -1192,12 +1192,12 @@ function webform_localization_i18n_string_locale_translate_edit_form_submit($for
  * Adds a translate link to each webform component.
  */
 function webform_localization_preprocess_webform_components_form(&$variables) {
+  $form = $variables['form'];
   if (!isset($form['#node']->webform['nid'])) {
     return;
   }
 
   $header = $variables['header'];
-  $form = $variables['form'];
   $rows = $variables['rows'];
   $node = $form['#node'];
 
