@@ -4,6 +4,7 @@
  * @file
  * Webform Localization i18n_string integration.
  */
+
 /**
  * Provides interface with the i18n_string module.
  * Based in patch http://drupal.org/node/245424#comment-5244256
@@ -146,9 +147,9 @@ function webform_localization_component_update_translation_strings(&$component) 
  *   The renderable array to be parsed.
  * @param array $component
  *   The component which was rendered.
- * @return
- *   An array of translatabled webform properties.
  *
+ * @return array
+ *   An array of translatabled webform properties.
  */
 function _webform_localization_component_translation_parse($element, $component) {
   $translated_properies = array();
@@ -189,10 +190,8 @@ function _webform_localization_component_translation_parse($element, $component)
           }
         }
         else {
-          /**
-           * If the translatable property is not an array,
-           * it can be treated as a string.
-           */
+          // If the translatable property is not an array,
+          // it can be treated as a string.
           $name = webform_localization_i18n_string_name($component['nid'], $component['cid'], $property);
           $translated_properies[] = $name;
           i18n_string($name, $element['#' . $key], array('update' => TRUE));
@@ -208,8 +207,7 @@ function _webform_localization_component_translation_parse($element, $component)
     $element[$child]['#parents'][] = $child;
     // Add the translated propertied to the list.
     $translated_properies = array_merge(
-            $translated_properies,
-            _webform_localization_component_translation_parse($element[$child], $component)
+        $translated_properies, _webform_localization_component_translation_parse($element[$child], $component)
     );
   }
 
@@ -222,10 +220,10 @@ function _webform_localization_component_translation_parse($element, $component)
  * Additional arguments can be passed to add more depth to context
  *
  * @param int $node_identifier
- *   webform nid
+ *   webform nid.
  *
  * @return string
- *   i18n string name grouped by nid or uuid if module is available
+ *   i18n string name grouped by nid or uuid if module is available.
  */
 function webform_localization_i18n_string_name($node_identifier) {
   if (module_exists('uuid')) {
@@ -233,7 +231,7 @@ function webform_localization_i18n_string_name($node_identifier) {
   }
   $name = array('webform', $node_identifier);
   $args = func_get_args();
-  // Remove $node_identifier from args
+  // Remove $node_identifier from args.
   array_shift($args);
   foreach ($args as $arg) {
     $name[] = $arg;
@@ -242,7 +240,7 @@ function webform_localization_i18n_string_name($node_identifier) {
 }
 
 /**
- * Delete translation source for all the translatable poperties
+ * Delete translation source for all the translatable poperties.
  *
  * Process components matching webforms configuration.
  */
@@ -304,21 +302,17 @@ function webform_localization_update_translation_strings($properties) {
 /**
  * Translate general webform properties.
  *
- * @param $node
+ * @param object $node
  *   A node object.
  */
 function webform_localization_translate_strings(&$node, $update = FALSE) {
   $option = array('update' => $update, array('format' => I18N_STRING_FILTER_XSS));
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'confirmation');
   $node->webform['confirmation'] = i18n_string(
-          $name,
-          $node->webform['confirmation'],
-          $option);
+      $name, $node->webform['confirmation'], $option);
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'submit_text');
   $node->webform['submit_text'] = i18n_string(
-          $name,
-          $node->webform['submit_text'],
-          $option);
+      $name, $node->webform['submit_text'], $option);
 
   // Allow to translate the redirect url if it's not set to none or the
   // default confirmation page.
@@ -359,9 +353,9 @@ function webform_localization_emails_update_translation_string($properties) {
 /**
  * Update / create translation source for webform email poperties.
  *
- * @param $emails
+ * @param array $emails
  *   An array of webform emails.
- * @param $nid
+ * @param int $nid
  *   The node Id of the webform.
  */
 function webform_localization_emails_translation_string_refresh($emails, $nid) {
@@ -390,7 +384,7 @@ function webform_localization_emails_translation_string_refresh($emails, $nid) {
 /**
  * Translate webform email poperties.
  *
- * @param $node
+ * @param object $node
  *   A node object.
  */
 function webform_localization_email_translate_strings(&$node) {
@@ -419,9 +413,9 @@ function webform_localization_email_translate_strings(&$node) {
 /**
  * Remove translation source for webform email poperties.
  *
- * @param $eid
+ * @param int $eid
  *   A webform email Id.
- * @param $nid
+ * @param int $nid
  *   A node Id.
  */
 function webform_localization_emails_delete_translation_string($eid, $nid) {
@@ -436,7 +430,7 @@ function webform_localization_emails_delete_translation_string($eid, $nid) {
 /**
  * Translate general webform poperties.
  *
- * @param $node
+ * @param object $node
  *   A node object.
  */
 function webform_localization_delete_translate_strings($node) {
@@ -451,12 +445,11 @@ function webform_localization_delete_translate_strings($node) {
 
 /**
  * Update i18n string contexts if uuid module is enabled/disabled.
- *
  */
 function webform_localization_uuid_update_strings($disabling_uuid = FALSE) {
   module_load_install('i18n_string');
   $old_ids = db_query('SELECT distinct type FROM {i18n_string} WHERE textgroup = :webform', array(
-        ':webform' => 'webform'
+    ':webform' => 'webform',
       ))->fetchCol();
   variable_set('webform_localization_using_uuid', !$disabling_uuid);
   if (empty($old_ids)) {
@@ -480,13 +473,13 @@ function webform_localization_uuid_update_strings($disabling_uuid = FALSE) {
 /**
  * Helper function that retrieves entity IDs by their UUIDs.
  *
- *
- * @param $entity_type
+ * @param string $entity_type
  *   The entity type we should be dealing with.
- * @param $uuids
+ * @param array $uuids
  *   An array of UUIDs for which we should find their entity IDs. If $revision
  *   is TRUE this should be revision UUIDs instead.
- * @return
+ *
+ * @return array
  *   Array of entity IDs keyed by their UUIDs. If $revision is TRUE revision
  *   IDs and UUIDs are returned instead.
  */
@@ -504,22 +497,21 @@ function webform_localization_get_id_by_uuid($entity_type, $uuids) {
 
   // Get all UUIDs in one query.
   return db_select($table, 't')
-      ->fields('t', array($uuid_key, $id_key))
-      ->condition($uuid_key, array_values($uuids), 'IN')
-      ->execute()
-      ->fetchAllKeyed();
+          ->fields('t', array($uuid_key, $id_key))
+          ->condition($uuid_key, array_values($uuids), 'IN')
+          ->execute()
+          ->fetchAllKeyed();
 }
 
 /**
  * Helper function to replace an array key and its content.
  *
- * @param $array
+ * @param array $array
  *   Array To process.
- * @param $old_key
+ * @param string $old_key
  *   Array key to be replaced.
- * @param $new_key
+ * @param string $new_key
  *   The new array key.
- *
  */
 function _webform_localization_array_key_replace(&$array, $old_key, $new_key) {
   $keys = array_keys($array);
@@ -535,9 +527,11 @@ function _webform_localization_array_key_replace(&$array, $old_key, $new_key) {
 /**
  * Helper function to convert select / grid strings to array.
  *
- * @param $string_array
+ * @param string $string_array
  *   Array To process.
  *
+ * @return array
+ *   Processed array.
  */
 function _webform_localization_string_to_key($string_array) {
   $key_array = array();
@@ -553,4 +547,3 @@ function _webform_localization_string_to_key($string_array) {
   }
   return $key_array;
 }
-
