@@ -76,7 +76,7 @@ function _webform_localization_translate_component(&$element, $component) {
               $current_element['#' . $property][$option_group][$name_list[5]] = webform_replace_tokens($text, $node);
             }
             else {
-              $current_element['#' . $property][$key] = $text;
+              $current_element['#' . $property][$option_group][$name_list[5]] = $text;
             }
           }
           else {
