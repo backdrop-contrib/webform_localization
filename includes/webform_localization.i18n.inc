@@ -37,7 +37,6 @@ function _webform_localization_translate_component(&$element, $component) {
         $current_element_format = $current_element['#format'];
       } else {
         $current_element_format = I18N_STRING_FILTER_XSS_ADMIN;
-        //$current_element_format = 'plain_text';//TEST , see comment #46 https://www.drupal.org/node/2633966#comment-10685218
       }
       if (strpos($name_list[3], '[') !== FALSE) {
         // The property is deeper in the renderable array, we must extract the
