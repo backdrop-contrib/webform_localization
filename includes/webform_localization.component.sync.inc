@@ -30,27 +30,30 @@ function webform_localization_component_get_translations($component) {
 
   $node = node_load($component['nid']);
   $translations = translation_node_get_translations($node->tnid);
+  $component_translations[$node->tnid] = array();
 
-  if (!isset($component_translations[$node->tnid])) {
+  if (!empty($translations) && !isset($component_translations[$node->tnid])) {
     $nid_list = array();
     foreach ($translations as $trans_node) {
       $nid_list[] = $trans_node->nid;
     }
     // Load components for each translated node.
-    $components = db_select('webform_component')
-        ->fields('webform_component')
-        ->condition('nid', $nid_list, 'IN')
-        ->condition('cid', $component['cid'], '=')
-        ->orderBy('nid')
-        ->execute()
-        ->fetchAllAssoc('nid', PDO::FETCH_ASSOC);
-    // Cleanup on each component.
-    foreach ($components as $cid => $c) {
-      $components[$cid]['nid'] = $c['nid'];
-      $components[$cid]['extra'] = unserialize($c['extra']);
-      webform_component_defaults($components[$cid]);
+    if (!empty($nid_list)) {
+      $components = db_select('webform_component')
+          ->fields('webform_component')
+          ->condition('nid', $nid_list, 'IN')
+          ->condition('cid', $component['cid'], '=')
+          ->orderBy('nid')
+          ->execute()
+          ->fetchAllAssoc('nid', PDO::FETCH_ASSOC);
+      // Cleanup on each component.
+      foreach ($components as $cid => $c) {
+        $components[$cid]['nid'] = $c['nid'];
+        $components[$cid]['extra'] = unserialize($c['extra']);
+        webform_component_defaults($components[$cid]);
+      }
+      $component_translations[$node->tnid] = $components;
     }
-    $component_translations[$node->tnid] = $components;
   }
 
   return $component_translations[$node->tnid];
