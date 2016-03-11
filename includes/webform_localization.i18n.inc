@@ -32,6 +32,13 @@ function _webform_localization_translate_component(&$element, $component) {
     foreach ($component['extra']['translated_strings'] as $name) {
       $name_list = explode(':', $name);
       $current_element = &$element;
+      $current_element_format;
+      if (isset($current_element['#format'])) {
+        $current_element_format = $current_element['#format'];
+      } else {
+        $current_element_format = I18N_STRING_FILTER_XSS_ADMIN;
+        //$current_element_format = 'plain_text';//TEST , see comment #46 https://www.drupal.org/node/2633966#comment-10685218
+      }
       if (strpos($name_list[3], '[') !== FALSE) {
         // The property is deeper in the renderable array, we must extract the
         // the place where it is.
@@ -71,7 +78,7 @@ function _webform_localization_translate_component(&$element, $component) {
           $option_group = str_replace('/-', '', $name_list[4]);
           // If it's a element.
           if (isset($name_list[5])) {
-            $text = i18n_string($name, $current_element['#' . $property][$option_group][$name_list[5]], array('format' => I18N_STRING_FILTER_XSS));
+            $text = i18n_string($name, $current_element['#' . $property][$option_group][$name_list[5]], array('format' => $current_element_format));
             if (module_exists('token')) {
               $current_element['#' . $property][$option_group][$name_list[5]] = webform_replace_tokens($text, $node);
             }
@@ -81,7 +88,7 @@ function _webform_localization_translate_component(&$element, $component) {
           }
           else {
             // If it's a option group we translate the key.
-            $text = i18n_string($name, $option_group, array('format' => I18N_STRING_FILTER_XSS));
+            $text = i18n_string($name, $option_group, array('format' => $current_element_format));
             if (module_exists('token')) {
               $translated_option_group = webform_replace_tokens($text, $node);
             }
@@ -99,8 +106,11 @@ function _webform_localization_translate_component(&$element, $component) {
             if ($property == 'markup' && $current_element['#type'] == 'markup') {
               $text = i18n_string($name, $current_element['#' . $property], array('format' => $current_element['#format']));
             }
+            elseif ($property == 'description') {
+              $text = i18n_string($name, $current_element['#' . $property], array('sanitize' => FALSE));
+            }
             else {
-              $text = i18n_string($name, $current_element['#' . $property], array('format' => I18N_STRING_FILTER_XSS));
+              $text = i18n_string($name, $current_element['#' . $property], array('sanitize' => FALSE));
             }
             if (module_exists('token')) {
               $current_element['#' . $property] = webform_replace_tokens($text, $node);
@@ -306,7 +316,7 @@ function webform_localization_update_translation_strings($properties) {
  *   A node object.
  */
 function webform_localization_translate_strings(&$node, $update = FALSE) {
-  $option = array('update' => $update, array('format' => I18N_STRING_FILTER_XSS));
+  $option = array('update' => $update, array('sanitize' => FALSE));
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'confirmation');
   $node->webform['confirmation'] = i18n_string(
       $name, $node->webform['confirmation'], $option);
@@ -405,7 +415,7 @@ function webform_localization_email_translate_strings(&$node) {
     }
     if (!empty($email['template']) && $email['template'] != 'default') {
       $name = webform_localization_i18n_string_name($nid, 'email', $eid, 'template');
-      $email['template'] = i18n_string($name, $email['template'], array('format' => I18N_STRING_FILTER_XSS));
+      $email['template'] = i18n_string($name, $email['template'], array('sanitize' => FALSE));
     }
   }
 }
