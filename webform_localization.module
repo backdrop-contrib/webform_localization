@@ -507,12 +507,7 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
     }
     $form['advanced']['submit_text']['#default_value'] = $form['#node']->webform['submit_text'];
     // Add friendly translation link.
-    if (module_exists('webform_uuid') && variable_get('webform_localization_using_uuid', FALSE)) {
-      $name = 'webform:' . $form['#node']->uuid . ':confirmation';
-    }
-    else {
-      $name = 'webform:' . $form['#node']->nid . ':confirmation';
-    }
+    $name = webform_localization_i18n_string_name($form['#node']->nid, 'confirmation');
     $string_source = i18n_string_get_string($name);
     if (isset($string_source->lid) && $string_source->lid != FALSE) {
       $link = l(t('here'), 'admin/config/regional/translate/edit/' . $string_source->lid, array('query' => drupal_get_destination()));
@@ -1239,12 +1234,7 @@ function webform_localization_preprocess_webform_components_form(&$variables) {
     foreach ($rows as $key => $row) {
       $row_data[$key] = $row;
       if (isset($row['data-cid'])) {
-        if (module_exists('webform_uuid') && variable_get('webform_localization_using_uuid', FALSE)) {
-          $name = 'webform:' . $node->uuid . ':' . $row['data-cid'] . ':' . '#title';
-        }
-        else {
-          $name = 'webform:' . $node->nid . ':' . $row['data-cid'] . ':' . '#title';
-        }
+        $name = webform_localization_i18n_string_name($node->nid, $row['data-cid'], '#title');
         $string_source = i18n_string_get_string($name);
         if (isset($string_source->lid)) {
           $row_data[$key]['data'][] = l(t('Translate'), 'admin/config/regional/translate/edit/' . $string_source->lid, array('query' => drupal_get_destination()));
