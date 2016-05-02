@@ -389,7 +389,7 @@ function webform_localization_webform_submission_presave(&$node, &$submission) {
  * Implements hook_node_delete().
  */
 function webform_localization_node_delete($node) {
-  if (!in_array($node->type, webform_variable_get('webform_node_types'))) {
+  if (!in_array($node->type, webform_variable_get('webform_node_types')) || empty($node->webform['components'])) {
     return;
   }
   module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
