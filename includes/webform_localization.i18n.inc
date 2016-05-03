@@ -140,7 +140,7 @@ function webform_localization_component_update_translation_strings(&$component) 
   // update / create translation source for them.
   $component['extra']['translated_strings'] = _webform_localization_component_translation_parse($element, $component);
   // Render the 'display' FAPI array for the component.
-  $element = webform_component_invoke($component['type'], 'display', $component, NULL, 'html');
+  // $element = webform_component_invoke($component['type'], 'display', $component, NULL, 'html');
   // Parse the renderable array to find the translatable properties and
   // update / create translation source for them.
   $component['extra']['translated_strings'] = array_merge($component['extra']['translated_strings'], array_diff(_webform_localization_component_translation_parse($element, $component), $component['extra']['translated_strings']));
@@ -166,19 +166,26 @@ function _webform_localization_component_translation_parse($element, $component)
     $element['#parents'] = array();
   }
 
+  $element['#translatable'][] = 'placeholder';
   if (isset($element['#translatable']) && is_array($element['#translatable'])) {
     foreach ($element['#translatable'] as $key) {
-      if (isset($element['#' . $key]) && $element['#' . $key] != '') {
+      if (!empty($element['#' . $key]) || !empty($element['#attributes'][$key])) {
         if (isset($element['#parents']) && count($element['#parents'])) {
           $property = '[' . implode('][', $element['#parents']) . ']#' . $key;
         }
         else {
           $property = '#' . $key;
         }
-        if (is_array($element['#' . $key])) {
+        $element_key = '';
+        if ($key == 'placeholder' && !empty($element['#attributes']['placeholder'])) {
+          $element_key = $element['#attributes']['placeholder'];
+        } elseif ($key != 'placeholder' && !empty($element['#' . $key])) {
+          $element_key = $element['#' . $key];
+        }
+        if (is_array($element_key)) {
           // If the translatable property is an array, we translate the
           // children.
-          foreach ($element['#' . $key] as $elem_key => $elem_value) {
+          foreach ($element_key as $elem_key => $elem_value) {
             // If the child if an array, we translate the elements.
             if (is_array($elem_value)) {
               foreach ($elem_value as $k => $v) {
@@ -203,7 +210,7 @@ function _webform_localization_component_translation_parse($element, $component)
           // it can be treated as a string.
           $name = webform_localization_i18n_string_name($component['nid'], $component['cid'], $property);
           $translated_properies[] = $name;
-          i18n_string($name, $element['#' . $key], array('update' => TRUE));
+          i18n_string($name, $element_key, array('update' => TRUE));
         }
       }
     }
