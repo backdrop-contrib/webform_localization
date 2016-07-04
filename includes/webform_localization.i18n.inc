@@ -322,7 +322,7 @@ function webform_localization_update_translation_strings($properties) {
  *   A node object.
  */
 function webform_localization_translate_strings(&$node, $update = FALSE) {
-  $option = array('update' => $update, array('sanitize' => FALSE));
+  $option = array('update' => $update, array('sanitize' => FALSE, array('format' => I18N_STRING_FILTER_XSS_ADMIN)));
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'confirmation');
   $node->webform['confirmation'] = i18n_string(
       $name, $node->webform['confirmation'], $option);
