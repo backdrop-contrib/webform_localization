@@ -242,7 +242,7 @@ function _webform_localization_component_translation_parse($element, $component)
  *   i18n string name grouped by nid or uuid if module is available.
  */
 function webform_localization_i18n_string_name($node_identifier) {
-  if (module_exists('uuid')) {
+  if (module_exists('uuid') and !uuid_is_valid($node_identifier)) {
     $node_identifier = current(entity_get_uuid_by_id('node', array($node_identifier)));
   }
   $name = array('webform', $node_identifier);
@@ -323,6 +323,9 @@ function webform_localization_update_translation_strings($properties) {
  */
 function webform_localization_translate_strings(&$node, $update = FALSE) {
   $option = array('update' => $update, array('sanitize' => FALSE, array('format' => I18N_STRING_FILTER_XSS_ADMIN)));
+  if (!array_key_exists('nid', $node->webform)) {
+    $node->webform['nid'] = $node->nid;
+  }
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'confirmation');
   $node->webform['confirmation'] = i18n_string(
       $name, $node->webform['confirmation'], $option);
