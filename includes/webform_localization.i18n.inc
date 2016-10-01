@@ -125,7 +125,7 @@ function _webform_localization_translate_component(&$element, $component) {
 }
 
 /**
- * Update / create translation source for all the translatable poperties.
+ * Update / create translation source for all the translatable properties.
  *
  * @param array $component
  *   A webform component.
@@ -256,7 +256,7 @@ function webform_localization_i18n_string_name($node_identifier) {
 }
 
 /**
- * Delete translation source for all the translatable poperties.
+ * Delete translation source for all the translatable properties.
  *
  * Process components matching webforms configuration.
  */
@@ -278,7 +278,7 @@ function webform_localization_delete_all_strings() {
 }
 
 /**
- * Remove translation source for all the translatable poperties.
+ * Remove translation source for all the translatable properties.
  *
  * @param array $component
  *   A webform component array.
@@ -292,26 +292,27 @@ function webform_localization_component_delete_translation_strings($component) {
 }
 
 /**
- * Update / create translation source for general webform poperties.
+ * Update / create translation source for general webform properties.
  *
  * @param array $properties
  *   The form_state values that have been saved.
  */
 function webform_localization_update_translation_strings($properties) {
+  $options = array('update' => TRUE, 'translate' => FALSE);
   if (!empty($properties['confirmation']['value'])) {
     $name = webform_localization_i18n_string_name($properties['nid'], 'confirmation');
-    i18n_string($name, $properties['confirmation']['value'], array('update' => TRUE));
+    i18n_string($name, $properties['confirmation']['value'], $options + array('format' => $properties['confirmation']['format']));
   }
   if (!empty($properties['submit_text'])) {
     $name = webform_localization_i18n_string_name($properties['nid'], 'submit_text');
-    i18n_string($name, $properties['submit_text'], array('update' => TRUE));
+    i18n_string($name, $properties['submit_text'], $options);
   }
 
   // Allow to translate the redirect url if it's not set to none or the
   // default confirmation page.
   if (!in_array($properties['redirect_url'], array('<confirmation>', '<none>'))) {
     $name = webform_localization_i18n_string_name($properties['nid'], 'redirect_url');
-    i18n_string($name, $properties['redirect_url'], array('update' => TRUE));
+    i18n_string($name, $properties['redirect_url'], $options);
   }
 }
 
@@ -322,27 +323,27 @@ function webform_localization_update_translation_strings($properties) {
  *   A node object.
  */
 function webform_localization_translate_strings(&$node, $update = FALSE) {
-  $option = array('update' => $update, array('sanitize' => FALSE, array('format' => I18N_STRING_FILTER_XSS_ADMIN)));
+  $options = array('update' => $update);
   if (!array_key_exists('nid', $node->webform)) {
     $node->webform['nid'] = $node->nid;
   }
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'confirmation');
   $node->webform['confirmation'] = i18n_string(
-      $name, $node->webform['confirmation'], $option);
+      $name, $node->webform['confirmation'], $options + array('format' => I18N_STRING_FILTER_XSS));
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'submit_text');
   $node->webform['submit_text'] = i18n_string(
-      $name, $node->webform['submit_text'], $option);
+      $name, $node->webform['submit_text'], $options);
 
   // Allow to translate the redirect url if it's not set to none or the
   // default confirmation page.
   if (!in_array($node->webform['redirect_url'], array('<confirmation>', '<none>'))) {
     $name = webform_localization_i18n_string_name($node->webform['nid'], 'redirect_url');
-    $node->webform['redirect_url'] = i18n_string($name, $node->webform['redirect_url'], $option);
+    $node->webform['redirect_url'] = i18n_string($name, $node->webform['redirect_url'], $options);
   }
 }
 
 /**
- * Update / create translation source for webform email poperties.
+ * Update / create translation source for webform email properties.
  *
  * @param array $properties
  *   The form_state values that have been saved.
@@ -370,7 +371,7 @@ function webform_localization_emails_update_translation_string($properties) {
 }
 
 /**
- * Update / create translation source for webform email poperties.
+ * Update / create translation source for webform email properties.
  *
  * @param array $emails
  *   An array of webform emails.
@@ -401,7 +402,7 @@ function webform_localization_emails_translation_string_refresh($emails, $nid) {
 }
 
 /**
- * Translate webform email poperties.
+ * Translate webform email properties.
  *
  * @param object $node
  *   A node object.
@@ -430,7 +431,7 @@ function webform_localization_email_translate_strings(&$node) {
 }
 
 /**
- * Remove translation source for webform email poperties.
+ * Remove translation source for webform email properties.
  *
  * @param int $eid
  *   A webform email Id.
@@ -447,7 +448,7 @@ function webform_localization_emails_delete_translation_string($eid, $nid) {
 }
 
 /**
- * Translate general webform poperties.
+ * Translate general webform properties.
  *
  * @param object $node
  *   A node object.
