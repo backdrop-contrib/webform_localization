@@ -60,7 +60,7 @@ function _webform_localization_translate_component(&$element, $component) {
       }
       if (strpos($property, '-') !== FALSE) {
         // If property is array, we extract the key from the property.
-        list ($property, $key) = explode('-', $property);
+        list ($property, $key) = explode('-', $property, 2);
         if (isset($current_element['#' . $property][$key])) {
           $text = i18n_string($name, $current_element['#' . $property][$key], array('format' => I18N_STRING_FILTER_XSS));
           if (module_exists('token')) {
