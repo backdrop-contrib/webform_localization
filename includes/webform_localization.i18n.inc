@@ -111,12 +111,7 @@ function _webform_localization_translate_component(&$element, $component) {
             else {
               $text = i18n_string($name, $current_element['#' . $property], array('sanitize' => FALSE));
             }
-            if (module_exists('token')) {
-              $current_element['#' . $property] = webform_replace_tokens($text, $node);
-            }
-            else {
-              $current_element['#' . $property] = $text;
-            }
+            $current_element['#' . $property] = $text;
           }
         }
       }
