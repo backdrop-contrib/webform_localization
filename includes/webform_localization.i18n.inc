@@ -120,7 +120,7 @@ function _webform_localization_translate_component(&$element, $component) {
 }
 
 /**
- * Update / create translation source for all the translatable poperties.
+ * Update / create translation source for all the translatable properties.
  *
  * @param array $component
  *   A webform component.
@@ -251,7 +251,7 @@ function webform_localization_i18n_string_name($node_identifier) {
 }
 
 /**
- * Delete translation source for all the translatable poperties.
+ * Delete translation source for all the translatable properties.
  *
  * Process components matching webforms configuration.
  */
@@ -273,7 +273,7 @@ function webform_localization_delete_all_strings() {
 }
 
 /**
- * Remove translation source for all the translatable poperties.
+ * Remove translation source for all the translatable properties.
  *
  * @param array $component
  *   A webform component array.
@@ -287,7 +287,7 @@ function webform_localization_component_delete_translation_strings($component) {
 }
 
 /**
- * Update / create translation source for general webform poperties.
+ * Update / create translation source for general webform properties.
  *
  * @param array $properties
  *   The form_state values that have been saved.
@@ -337,7 +337,7 @@ function webform_localization_translate_strings(&$node, $update = FALSE) {
 }
 
 /**
- * Update / create translation source for webform email poperties.
+ * Update / create translation source for webform email properties.
  *
  * @param array $properties
  *   The form_state values that have been saved.
@@ -365,7 +365,7 @@ function webform_localization_emails_update_translation_string($properties) {
 }
 
 /**
- * Update / create translation source for webform email poperties.
+ * Update / create translation source for webform email properties.
  *
  * @param array $emails
  *   An array of webform emails.
@@ -396,7 +396,7 @@ function webform_localization_emails_translation_string_refresh($emails, $nid) {
 }
 
 /**
- * Translate webform email poperties.
+ * Translate webform email properties.
  *
  * @param object $node
  *   A node object.
@@ -425,7 +425,7 @@ function webform_localization_email_translate_strings(&$node) {
 }
 
 /**
- * Remove translation source for webform email poperties.
+ * Remove translation source for webform email properties.
  *
  * @param int $eid
  *   A webform email Id.
@@ -442,7 +442,7 @@ function webform_localization_emails_delete_translation_string($eid, $nid) {
 }
 
 /**
- * Translate general webform poperties.
+ * Translate general webform properties.
  *
  * @param object $node
  *   A node object.
