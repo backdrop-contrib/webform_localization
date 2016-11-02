@@ -293,20 +293,33 @@ function webform_localization_component_delete_translation_strings($component) {
  *   The form_state values that have been saved.
  */
 function webform_localization_update_translation_strings($properties) {
+  $options = array('update' => TRUE, 'translate' => FALSE);
   if (!empty($properties['confirmation']['value'])) {
     $name = webform_localization_i18n_string_name($properties['nid'], 'confirmation');
-    i18n_string($name, $properties['confirmation']['value'], array('update' => TRUE));
+    $confirmationOptions = $options + array('format' => I18N_STRING_FILTER_XSS);
+    if (isset($properties['confirmation']['format'])) {
+      if (i18n_string_allowed_format($properties['confirmation']['format'])) {
+        $confirmationOptions['format'] = $properties['confirmation']['format'];
+      }
+      else {
+        drupal_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
+          '@name' => $name,
+          '@format' => $properties['confirmation']['format']
+        )), 'warning', FALSE);
+      }
+    }
+    i18n_string($name, $properties['confirmation']['value'], $confirmationOptions);
   }
   if (!empty($properties['submit_text'])) {
     $name = webform_localization_i18n_string_name($properties['nid'], 'submit_text');
-    i18n_string($name, $properties['submit_text'], array('update' => TRUE));
+    i18n_string($name, $properties['submit_text'], $options);
   }
 
   // Allow to translate the redirect url if it's not set to none or the
   // default confirmation page.
   if (!in_array($properties['redirect_url'], array('<confirmation>', '<none>'))) {
     $name = webform_localization_i18n_string_name($properties['nid'], 'redirect_url');
-    i18n_string($name, $properties['redirect_url'], array('update' => TRUE));
+    i18n_string($name, $properties['redirect_url'], $options);
   }
 }
 
@@ -317,22 +330,35 @@ function webform_localization_update_translation_strings($properties) {
  *   A node object.
  */
 function webform_localization_translate_strings(&$node, $update = FALSE) {
-  $option = array('update' => $update, array('sanitize' => FALSE, array('format' => I18N_STRING_FILTER_XSS_ADMIN)));
+  $options = array('update' => $update);
   if (!array_key_exists('nid', $node->webform)) {
     $node->webform['nid'] = $node->nid;
   }
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'confirmation');
+  $confirmationOptions = $options + array('format' => I18N_STRING_FILTER_XSS);
+  if (isset($node->webform['confirmation_format'])) {
+    if (i18n_string_allowed_format($node->webform['confirmation_format'])) {
+      $confirmationOptions['format'] = $node->webform['confirmation_format'];
+    }
+    else {
+      drupal_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
+        '@name' => $name,
+        '@format' => $node->webform['confirmation_format']
+      )), 'warning', FALSE);
+    }
+  }
   $node->webform['confirmation'] = i18n_string(
-      $name, $node->webform['confirmation'], $option);
+      $name, $node->webform['confirmation'], $confirmationOptions);
+
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'submit_text');
   $node->webform['submit_text'] = i18n_string(
-      $name, $node->webform['submit_text'], $option);
+      $name, $node->webform['submit_text'], $options);
 
   // Allow to translate the redirect url if it's not set to none or the
   // default confirmation page.
   if (!in_array($node->webform['redirect_url'], array('<confirmation>', '<none>'))) {
     $name = webform_localization_i18n_string_name($node->webform['nid'], 'redirect_url');
-    $node->webform['redirect_url'] = i18n_string($name, $node->webform['redirect_url'], $option);
+    $node->webform['redirect_url'] = i18n_string($name, $node->webform['redirect_url'], $options);
   }
 }
 
