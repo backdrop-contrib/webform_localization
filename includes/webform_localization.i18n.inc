@@ -317,7 +317,7 @@ function webform_localization_update_translation_strings($properties) {
 
   // Allow to translate the redirect url if it's not set to none or the
   // default confirmation page.
-  if (!in_array($properties['redirect_url'], array('<confirmation>', '<none>'))) {
+  if (!in_array($properties['redirect_url'], array('<confirmation>', '<none>', '<front>'))) {
     $name = webform_localization_i18n_string_name($properties['nid'], 'redirect_url');
     i18n_string($name, $properties['redirect_url'], $options);
   }
@@ -356,7 +356,7 @@ function webform_localization_translate_strings(&$node, $update = FALSE) {
 
   // Allow to translate the redirect url if it's not set to none or the
   // default confirmation page.
-  if (!in_array($node->webform['redirect_url'], array('<confirmation>', '<none>'))) {
+  if (!in_array($node->webform['redirect_url'], array('<confirmation>', '<none>', '<front>'))) {
     $name = webform_localization_i18n_string_name($node->webform['nid'], 'redirect_url');
     $node->webform['redirect_url'] = i18n_string($name, $node->webform['redirect_url'], $options);
   }

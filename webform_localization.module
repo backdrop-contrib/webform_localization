@@ -651,7 +651,7 @@ function _webform_localization_webform_configure_form_submit_i18n_tweaks($form, 
     $form_elements = array('confirmation', 'submit_text');
     // Add redirect url if it's not set to none or the default
     // confirmation page.
-    if (!in_array($form_state['values']['redirect_url'], array('<confirmation>', '<none>'))) {
+    if (!in_array($form_state['values']['redirect_url'], array('<confirmation>', '<none>', '<front>'))) {
       $form_elements[] = 'redirect_url';
     }
     foreach ($form_elements as $element) {
