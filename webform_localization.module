@@ -1277,23 +1277,39 @@ function webform_localization_preprocess_webform_components_form(&$variables) {
  * Implements hook_js_alter().
  */
 function webform_localization_js_alter(&$javascript) {
+  global $language;
+
   // Only react on webform nodes.
   if ($node = menu_get_object()) {
-    if (!isset($node->type) || !in_array($node->type, webform_variable_get('webform_node_types'))) {
-      return FALSE;
+    if (isset($node->type) && in_array($node->type, webform_variable_get('webform_node_types'))) {
+      // Only react when we are not on the source node.
+      if ($node->nid != $node->tnid && $node->tnid > 0) {
+        // Gets webform localization options that match this node ID.
+        $webform_localization_options = webform_localization_get_config($node->tnid);
+
+        // Only react when keep a single webform across a translation set.
+        if ($webform_localization_options['single_webform'] > 0) {
+          foreach ($javascript['settings']['data'] as &$setting) {
+            if (isset($setting['webform']['conditionals']['webform-client-form-' . $node->tnid])) {
+              $setting['webform']['conditionals']['webform-client-form-' . $node->nid] = $setting['webform']['conditionals']['webform-client-form-' . $node->tnid];
+              unset($setting['webform']['conditionals']['webform-client-form-' . $node->tnid]);
+            }
+          }
+        }
+      }
     }
+  }
 
-    // Only react when we are not on the source node.
-    if ($node->nid != $node->tnid && $node->tnid > 0) {
-      // Gets webform localization options that match this node ID.
-      $webform_localization_options = webform_localization_get_config($node->tnid);
-
-      // Only react when keep a single webform across a translation set.
-      if ($webform_localization_options['single_webform'] > 0) {
-        foreach ($javascript['settings']['data'] as &$setting) {
-          if (isset($setting['webform']['conditionals']['webform-client-form-' . $node->tnid])) {
-            $setting['webform']['conditionals']['webform-client-form-' . $node->nid] = $setting['webform']['conditionals']['webform-client-form-' . $node->tnid];
-            unset($setting['webform']['conditionals']['webform-client-form-' . $node->tnid]);
+  // For cases when webform is displayed within a block, but not a page itself.
+  foreach ($javascript['settings']['data'] as &$setting) {
+    if (isset($setting['webform']['conditionals'])) {
+      foreach ($setting['webform']['conditionals'] as $k => $data) {
+        if (preg_match("/^webform-client-form-(.*)/", $k, $matches) && isset($matches[1])) {
+          $translations = translation_node_get_translations($matches[1]);
+          $correct_translation = isset($translations[$language->language]) ? $translations[$language->language] : FALSE;
+          if (!empty($correct_translation)) {
+            $setting['webform']['conditionals']['webform-client-form-' . $correct_translation->nid] = $setting['webform']['conditionals'][$k];
+            unset($setting['webform']['conditionals'][$k]);
           }
         }
       }
