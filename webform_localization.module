@@ -166,6 +166,10 @@ function webform_localization_webform_component_insert($component) {
   }
 
   if ($wl_options['sync_components'] && _webform_localization_sync()) {
+    if (!module_exists('translation')) {
+      // Enable the translation module as it is needed for localization sync.
+      module_enable('translation');
+    }
     // Turn Off Sync.
     _webform_localization_sync(FALSE);
     // Get all versions of the node.
@@ -205,6 +209,10 @@ function webform_localization_webform_component_presave(&$component) {
   }
 
   if ($wl_options['sync_components'] && _webform_localization_sync()) {
+    if (!module_exists('translation')) {
+      // Enable the translation module as it is needed for localization sync.
+      module_enable('translation');
+    }
     $test_node = node_load($component['nid']);
     if ($test_node->tnid > 0) {
       // Turn Off Sync.
@@ -239,6 +247,10 @@ function webform_localization_webform_component_delete($component) {
   }
 
   if ($wl_options['sync_components'] && _webform_localization_sync()) {
+    if (!module_exists('translation')) {
+      // Enable the translation module as it is needed for localization sync.
+      module_enable('translation');
+    }
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.component.sync');
     webform_localization_synchronizable_properties_delete($component);
     // Turn Off Sync.
@@ -769,6 +781,10 @@ function webform_localization_form_webform_component_edit_form_alter(&$form, &$f
   // Gets webform localization options that match this node ID.
   $webform_localization_options = webform_localization_get_config($component['nid']);
   if ($webform_localization_options['sync_components']) {
+    if (!module_exists('translation')) {
+      // Enable the translation module as it is needed for localization sync.
+      module_enable('translation');
+    }
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.component.sync');
     $select_options = webform_localization_synchronizable_properties($component);
 
@@ -833,6 +849,10 @@ function webform_localization_field_attach_prepare_translation_alter(&$entity, $
       // Copy all Webform settings over to translated versions of this node
       // if the configuration match.
       if ($webform_localization_options['sync_components']) {
+        if (!module_exists('translation')) {
+          // Enable the translation module as it is needed for localization sync.
+          module_enable('translation');
+        }
         // NOTE:
         // Perhaps could be interesting to copy only specific properties
         // but for now the entire webform make more sense.
