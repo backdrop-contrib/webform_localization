@@ -1249,8 +1249,20 @@ function webform_localization_preprocess_webform_components_form(&$variables) {
       if (isset($row['data-cid'])) {
         $name = webform_localization_i18n_string_name($node->nid, $row['data-cid'], '#title');
         $string_source = i18n_string_get_string($name);
-        if (isset($string_source->lid)) {
+        if (isset($string_source->lid) && !empty($string_source->lid)) {
           $row_data[$key]['data'][] = l(t('Translate'), 'admin/config/regional/translate/edit/' . $string_source->lid, array('query' => drupal_get_destination()));
+        }
+        else {
+          // Markup components do not have a translatable title, look for markup instead
+          $name = webform_localization_i18n_string_name($node->nid, $row['data-cid'], '#markup');
+          $string_source = i18n_string_get_string($name);
+          if (isset($string_source->lid) && !empty($string_source->lid)) {
+            $row_data[$key]['data'][] = l(t('Translate'), 'admin/config/regional/translate/edit/' . $string_source->lid, array('query' => drupal_get_destination()));
+          }
+          else {
+            // this component does not have anything translatable, so don't show a link
+            $row_data[$key]['data'][] = '';
+          }
         }
       }
     }
