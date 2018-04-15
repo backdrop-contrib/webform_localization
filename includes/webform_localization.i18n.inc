@@ -354,7 +354,7 @@ function webform_localization_translate_strings(&$node, $update = FALSE) {
   }
   $name = webform_localization_i18n_string_name($node->webform['nid'], 'confirmation');
   $confirmationOptions = $options + array('format' => I18N_STRING_FILTER_XSS);
-  if (isset($node->webform['confirmation_format'])) {
+  if (in_array($node->webform['redirect_url'], array('<confirmation>', '<none>')) && isset($node->webform['confirmation_format'])) {
     if (i18n_string_allowed_format($node->webform['confirmation_format'])) {
       $confirmationOptions['format'] = $node->webform['confirmation_format'];
     }
