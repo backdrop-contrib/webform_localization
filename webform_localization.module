@@ -516,6 +516,19 @@ function webform_localization_form_webform_configure_form_alter(&$form, &$form_s
     else {
       $description = t('<i>The message must be filled in before it can be translated.</i>');
     }
+
+    $form['preview']['settings']['preview_message']['#default_value'] = $form['#node']->webform['preview_message'];
+    $name = webform_localization_i18n_string_name($form['#node']->nid, 'preview_message');
+    $string_source = i18n_string_get_string($name);
+    if (isset($string_source->lid) && $string_source->lid != FALSE) {
+      $link = l(t('here'), 'admin/config/regional/translate/edit/' . $string_source->lid, array('query' => drupal_get_destination()));
+      $description = t('Click !here to translate this string.', array('!here' => $link));
+    }
+    else {
+      $description = t('<i>The message must be filled in before it can be translated.</i>');
+    }
+    $form['preview']['settings']['preview_message']['#description'] .= ' ' . $description;
+
     $form['submission']['confirmation']['#description'] .= ' ' . $description;
   }
 
@@ -648,7 +661,7 @@ function _webform_localization_webform_configure_form_submit_i18n_tweaks($form, 
     // Webform Configure Form not in source language.
     module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
     // Collect the form elements that are translatable.
-    $form_elements = array('confirmation', 'submit_text');
+    $form_elements = array('confirmation', 'submit_text', 'preview_message');
     // Add redirect url if it's not set to none or the default
     // confirmation page.
     if (!in_array($form_state['values']['redirect_url'], array('<confirmation>', '<none>', '<front>'))) {
@@ -659,12 +672,12 @@ function _webform_localization_webform_configure_form_submit_i18n_tweaks($form, 
       $name = webform_localization_i18n_string_name($form['#node']->webform['nid'], $element);
       $i18n_string = i18n_string_get_string($name);
       // Get submitted value for $element (the translation).
-      $string_translation = ($element == 'confirmation' ? $form_state['values'][$element]['value'] : $form_state['values'][$element]);
+      $string_translation = ($element == 'confirmation'|| $element == 'preview_message') ? $form_state['values'][$element]['value'] : $form_state['values'][$element];
       if ($i18n_string->lid) {
         // There is an i18n string source.
         $string_source = $i18n_string->get_string();
         // We reset the source string value before saving the form.
-        if ($element == 'confirmation') {
+        if ($element == 'confirmation' || $element == 'preview_message') {
           $form_state['values'][$element]['value'] = $string_source;
         }
         else {
