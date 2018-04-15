@@ -381,7 +381,7 @@ function webform_localization_webform_submission_load(&$submissions) {
  */
 function webform_localization_webform_submission_presave(&$node, &$submission) {
   if (isset($node->tnid) && $node->tnid != 0) {
-    $submission->serial = _webform_submission_serial_next_value($node->tnid);
+    $submission->nid_serial = _webform_submission_serial_next_value($node->tnid);
   }
 }
 
