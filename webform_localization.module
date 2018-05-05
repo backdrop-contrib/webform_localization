@@ -1320,16 +1320,29 @@ function webform_localization_js_alter(&$javascript) {
     }
   }
 
-  // For cases when webform is displayed within a block, but not a page itself.
-  foreach ($javascript['settings']['data'] as &$setting) {
-    if (isset($setting['webform']['conditionals'])) {
-      foreach ($setting['webform']['conditionals'] as $k => $data) {
-        if (preg_match("/^webform-client-form-(.*)/", $k, $matches) && isset($matches[1])) {
-          $translations = translation_node_get_translations($matches[1]);
-          $correct_translation = isset($translations[$language->language]) ? $translations[$language->language] : FALSE;
-          if (!empty($correct_translation)) {
-            $setting['webform']['conditionals']['webform-client-form-' . $correct_translation->nid] = $setting['webform']['conditionals'][$k];
-            unset($setting['webform']['conditionals'][$k]);
+  $do_conditionals = FALSE;
+  if (isset($node->type) && in_array($node->type, webform_variable_get('webform_node_types'))) {
+    $do_conditionals = TRUE;
+    if (module_exists('entity_translation')) {
+      //Multiple types and translation modes possible for webforms.
+      if (entity_translation_enabled_bundle('node', $node->type)) {
+        //Bundle is using entity translation, see drupal.org/node/2829894 .
+        $do_conditionals = FALSE;
+      }
+    }
+  }
+  if ($do_conditionals) {
+    // For cases when webform is displayed within a block, but not a page itself.
+    foreach ($javascript['settings']['data'] as &$setting) {
+      if (isset($setting['webform']['conditionals'])) {
+        foreach ($setting['webform']['conditionals'] as $k => $data) {
+          if (preg_match("/^webform-client-form-(.*)/", $k, $matches) && isset($matches[1])) {
+            $translations = translation_node_get_translations($matches[1]);
+            $correct_translation = isset($translations[$language->language]) ? $translations[$language->language] : FALSE;
+            if (!empty($correct_translation)) {
+              $setting['webform']['conditionals']['webform-client-form-' . $correct_translation->nid] = $setting['webform']['conditionals'][$k];
+              unset($setting['webform']['conditionals'][$k]);
+            }
           }
         }
       }
