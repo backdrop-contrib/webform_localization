@@ -1320,18 +1320,15 @@ function webform_localization_js_alter(&$javascript) {
     }
   }
 
-  $do_conditionals = FALSE;
-  if (isset($node->type) && in_array($node->type, webform_variable_get('webform_node_types'))) {
-    $do_conditionals = TRUE;
-    if (module_exists('entity_translation')) {
-      //Multiple types and translation modes possible for webforms.
-      if (entity_translation_enabled_bundle('node', $node->type)) {
-        //Bundle is using entity translation, see drupal.org/node/2829894 .
-        $do_conditionals = FALSE;
-      }
+  $do_conditionals_for_block_regular_workflow = TRUE;
+  if (module_exists('entity_translation')) {
+    //Multiple types and translation modes possible for webforms.
+    if (entity_translation_enabled_bundle('node', $node->type)) {
+      //Bundle is using entity translation, see drupal.org/node/2829894 .
+      $do_conditionals_for_block_regular_workflow = FALSE;
     }
   }
-  if ($do_conditionals) {
+  if ($do_conditionals_for_block_regular_workflow) {
     // For cases when webform is displayed within a block, but not a page itself.
     foreach ($javascript['settings']['data'] as &$setting) {
       if (isset($setting['webform']['conditionals'])) {
