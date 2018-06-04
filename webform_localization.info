@@ -13,3 +13,4 @@ test_dependencies[] = token
 test_dependencies[] = i18n_block
 
 files[] = tests/webform_localization.test
+files[] = tests/webform_localization.submission.test
