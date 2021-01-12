@@ -21,7 +21,7 @@ function webform_localization_install() {
     'not null' => TRUE,
     'default' => '',
   ));
-  variable_set('webform_localization_using_uuid', module_exists('uuid'));
+  state_set('webform_localization_using_uuid', module_exists('uuid'));
 }
 
 /**
@@ -29,7 +29,6 @@ function webform_localization_install() {
  */
 function webform_localization_uninstall() {
   db_drop_field('webform_submissions', 'language');
-  variable_del('webform_localization_using_uuid');
 }
 
 /**
@@ -136,4 +135,12 @@ function webform_localization_schema_alter(&$schema) {
     'not null' => TRUE,
     'default' => '',
   );
+}
+
+/**
+ * Convert variable 'webform_localization_using_uuid' to state.
+ */
+function webform_localization_update_1000() {
+  state_set('webform_localization_using_uuid', module_exists('uuid'));
+  update_variable_del('webform_localization_using_uuid');
 }

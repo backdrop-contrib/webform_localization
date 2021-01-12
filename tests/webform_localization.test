@@ -4,7 +4,7 @@
  * @file
  * Webform localization module tests.
  */
-class WebformLocalizationWebTestCase extends DrupalWebTestCase {
+class WebformLocalizationWebTestCase extends backdropWebTestCase {
 
   // Webform test class instance.
   public $wtc;
@@ -27,12 +27,12 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
     module_load_include('test', 'webform', 'tests/webform');
     $this->wtc = new WebformTestCase;
 
-    /* Reset the permissions cache prior to calling drupalCreateUser
+    /* Reset the permissions cache prior to calling backdropCreateUser
      * see notes here: https://api.drupal.org/comment/28739#comment-28739
      */
     $this->checkPermissions(array(), TRUE);
     // Setup users.
-    $this->adminuser = $this->drupalCreateUser(array('bypass node access', 'administer nodes', 'administer languages', 'administer content types', 'administer blocks', 'access administration pages', 'translate content', 'create webform content',
+    $this->adminuser = $this->backdropCreateUser(array('bypass node access', 'administer nodes', 'administer languages', 'administer content types', 'administer blocks', 'access administration pages', 'translate content', 'create webform content',
           'edit any webform content',
           'access all webform results',
           'edit all webform submissions',
@@ -41,11 +41,11 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
           'translate interface',
           'translate user-defined strings'));
 
-    /* Reset the permissions cache prior to calling drupalCreateUser
+    /* Reset the permissions cache prior to calling backdropCreateUser
      * see notes here: https://api.drupal.org/comment/28739#comment-28739
      */
     $this->checkPermissions(array('access content'), TRUE);
-    $this->translator = $this->drupalCreateUser(array('translate content',
+    $this->translator = $this->backdropCreateUser(array('translate content',
           'create webform content',
           'edit any webform content',
           'access all webform results',
@@ -53,17 +53,17 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
           'translate interface',
           'translate user-defined strings'));
 
-    /* Reset the permissions cache prior to calling drupalCreateUser
+    /* Reset the permissions cache prior to calling backdropCreateUser
      * see notes here: https://api.drupal.org/comment/28739#comment-28739
      */
     $this->checkPermissions(array('access content'), TRUE);
-    $this->normaluser = $this->drupalCreateUser(array('access content', 'edit own webform submissions'));
+    $this->normaluser = $this->backdropCreateUser(array('access content', 'edit own webform submissions'));
 
     // Fix for reuse of webform test class.
     $this->wtc->webform_users['admin'] = $this->adminuser;
     $this->wtc->webform_users['admin']->gender = array(LANGUAGE_NONE => array(array('value' => 'Female')));
 
-    $this->drupalLogin($this->adminuser);
+    $this->backdropLogin($this->adminuser);
 
     // Add languages.
     $this->addLanguage('en');
@@ -72,9 +72,9 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
 
     // Enable URL language detection and selection.
     $edit = array('language[enabled][locale-url]' => TRUE);
-    $this->drupalPost('admin/config/regional/language/configure', $edit, t('Save settings'));
+    $this->backdropPost('admin/config/regional/language/configure', $edit, t('Save settings'));
     $this->assertRaw(t('Language negotiation configuration saved.'), 'URL language detection enabled.');
-    drupal_static_reset('locale_url_outbound_alter');
+    backdrop_static_reset('locale_url_outbound_alter');
   }
 
   /**
@@ -144,7 +144,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
       $settings['webform']['components'][$cid]['pid'] = 0;
     }
 
-    $this->_webform_node = $this->drupalCreateNode($settings);
+    $this->_webform_node = $this->backdropCreateNode($settings);
 
     return $this->_webform_node;
   }
@@ -158,17 +158,17 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
    */
   function addLanguage($language_code) {
     // Check to make sure that language has not already been installed.
-    $this->drupalGet('admin/config/regional/language');
+    $this->backdropGet('admin/config/regional/language');
 
-    if (strpos($this->drupalGetContent(), 'enabled[' . $language_code . ']') === FALSE) {
+    if (strpos($this->backdropGetContent(), 'enabled[' . $language_code . ']') === FALSE) {
       // Doesn't have language installed so add it.
       $edit = array();
       $edit['langcode'] = $language_code;
-      $this->drupalPost('admin/config/regional/language/add', $edit, t('Add language'));
+      $this->backdropPost('admin/config/regional/language/add', $edit, t('Add language'));
 
       // Make sure we are not using a stale list.
-      drupal_static_reset('language_list');
-      $languages = language_list('language');
+      backdrop_static_reset('language_list');
+      $languages = language_list(FALSE, TRUE);
       $this->assertTrue(array_key_exists($language_code, $languages), 'Language was installed successfully.');
 
       if (array_key_exists($language_code, $languages)) {
@@ -182,7 +182,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
     else {
       // It's installed but not enabled. Enable it.
       $this->assertTrue(TRUE, 'Language [' . $language_code . '] already installed.');
-      $this->drupalPost(NULL, array('enabled[' . $language_code . ']' => TRUE), t('Save configuration'));
+      $this->backdropPost(NULL, array('enabled[' . $language_code . ']' => TRUE), t('Save configuration'));
       $this->assertRaw(t('Configuration saved.'), 'Language successfully enabled.');
     }
   }
@@ -201,7 +201,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
    *   Language code.
    */
   function createWebformTranslation($node, $title, $body, $language) {
-    $this->drupalGet('node/add/webform', array('query' => array('translation' => $node->nid, 'target' => $language)));
+    $this->backdropGet('node/add/webform', array('query' => array('translation' => $node->nid, 'target' => $language)));
 
     $langcode = $language;
     $body_key = "body[" . LANGUAGE_NONE . "][0][value]";
@@ -211,11 +211,11 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
     $edit = array();
     $edit["title"] = $title;
     //$edit[$body_key] = $body;
-    $this->drupalPost(NULL, $edit, t('Save'));
+    $this->backdropPost(NULL, $edit, t('Save'));
     $this->assertRaw(t('Webform %title has been created.', array('%title' => $title)), 'Translation created.');
 
     // Check to make sure that translation was successful.
-    $translation = $this->drupalGetNodeByTitle($title);
+    $translation = $this->backdropGetNodeByTitle($title);
     $this->assertTrue($translation, 'Node found in database.');
     $this->assertTrue($translation->tnid == $node->nid, 'Translation set id correctly stored.');
 
@@ -240,7 +240,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
       'translation' => 'untranslated',
       'group' => $textgroup,
     );
-    $this->drupalPost('admin/config/regional/translate/translate', $search, t('Filter'));
+    $this->backdropPost('admin/config/regional/translate/translate', $search, t('Filter'));
     // assertText() seems to remove the input field where $name always could be
     // found, so this is not a false assert. See how assertNoText succeeds
     // later.
@@ -268,7 +268,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
     foreach ($translations as $langcode => $translation) {
       $edit["translations[$langcode]"] = $translation;
     }
-    $this->drupalPost(NULL, $edit, t('Save translations'));
+    $this->backdropPost(NULL, $edit, t('Save translations'));
     $this->assertText(t('The string has been saved.'), 'The string has been saved.');
     $this->assertEqual($this->getUrl(), url('admin/config/regional/translate/translate', array('absolute' => TRUE)), 'Correct page redirection.');
     $search = array(
@@ -277,7 +277,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
       'translation' => 'translated',
       'group' => $textgroup,
     );
-    $this->drupalPost('admin/config/regional/translate/translate', $search, t('Filter'));
+    $this->backdropPost('admin/config/regional/translate/translate', $search, t('Filter'));
     $this->assertText(check_plain($name), 'Search found the name.');
     $this->assertNoRaw($language_indicator, 'Name is translated.');
 
@@ -295,7 +295,7 @@ class WebformLocalizationWebTestCase extends DrupalWebTestCase {
 
   public function countString($string) {
     if ($this->plainTextContent === FALSE) {
-      $this->plainTextContent = filter_xss($this->drupalGetContent(), array());
+      $this->plainTextContent = filter_xss($this->backdropGetContent(), array());
     }
     return substr_count($this->plainTextContent, $string);
   }
@@ -323,10 +323,10 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
     parent::setUp($added_modules);
 
     // Set "Webform" content type to use multilingual support with translation.
-    $this->drupalGet('admin/structure/types/manage/webform');
+    $this->backdropGet('admin/structure/types/manage/webform');
     $edit = array();
     $edit['language_content_type'] = 2;
-    $this->drupalPost('admin/structure/types/manage/webform', $edit, t('Save content type'));
+    $this->backdropPost('admin/structure/types/manage/webform', $edit, t('Save content type'));
     $this->assertRaw(t('The content type %type has been updated.', array('%type' => 'Webform')), 'Webform content type has been updated.');
   }
 
@@ -334,7 +334,7 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
    * Test creating a webform and enabling localization by string translation
    */
   function testWebformLocalizationStringTranslation() {
-    $this->drupalLogin($this->adminuser);
+    $this->backdropLogin($this->adminuser);
     /**
      * Create the Webform test node, and enable
      * localization by string translation feature
@@ -358,11 +358,11 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
     $edit = array();
     $edit['expose_strings'] = TRUE;
     $edit['single_webform'] = TRUE;
-    $this->drupalPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
+    $this->backdropPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
     $this->assertRaw(t('The form settings have been updated.'), 'Webform string translation and single webform enabled.');
 
     // Checks for webform components in the Spanish node
-    $this->drupalGet('es/node/' . $node_translation1->nid);
+    $this->backdropGet('es/node/' . $node_translation1->nid);
     foreach ($node->webform['components'] as $key => $value) {
       if ($value['name'] == 'Hidden') {
         $this->assertNoRaw($value['name'], format_string('The %c webform component is not present.', array('%c' => $value['name'])), 'Spanish Webform translation');
@@ -372,7 +372,7 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
     }
 
     // Checks for webform components in the Deutsch node
-    $this->drupalGet('de/node/' . $node_translation2->nid);
+    $this->backdropGet('de/node/' . $node_translation2->nid);
     foreach ($node->webform['components'] as $key => $value) {
       if ($value['name'] == 'Hidden') {
         $this->assertNoRaw($value['name'], format_string('The %c webform component is not present.', array('%c' => $value['name'])), 'German Webform translation');
@@ -384,7 +384,7 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
     // Refresh webform strings
     $edit = array();
     $edit['groups[webform]'] = 'webform';
-    $this->drupalPost('admin/config/regional/translate/i18n_string', $edit, t('Refresh strings'));
+    $this->backdropPost('admin/config/regional/translate/i18n_string', $edit, t('Refresh strings'));
 
     // Select webform localization options that match this node ID.
     $options = db_select('locales_source')
@@ -407,7 +407,7 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
         unset($options[$key]);
       }
     }
-    $this->drupalGet('es/node/' . $node_translation1->nid);
+    $this->backdropGet('es/node/' . $node_translation1->nid);
     foreach ($options as $key => $value) {
       list(, $cid, ) = explode(':', $value['context']);
       $component = $node->webform['components'][$cid];
@@ -418,7 +418,7 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
       }
       $this->assertRaw($translation, format_string('%c translation is present.', array('%c' => $name)), 'Spanish Webform translation');
     }
-    $this->drupalGet('de/node/' . $node_translation2->nid);
+    $this->backdropGet('de/node/' . $node_translation2->nid);
     foreach ($options as $key => $value) {
       $name = $value['source'];
       $translation = 'de:' . $name;
@@ -430,15 +430,15 @@ class WebformLocalizationStringTranslationTestCase extends WebformLocalizationWe
 
     // Log in as normal user and add a answer to webform so string
     // translatability can be tested at various webform report pages.
-    $this->drupalLogin($this->normaluser);
-    $this->drupalPost('node/' . $node->nid, array(), t('Submit'));
+    $this->backdropLogin($this->normaluser);
+    $this->backdropPost('node/' . $node->nid, array(), t('Submit'));
     // Log back to admin account and download results, using Deutsch Webform
     // translations
-    $this->drupalLogin($this->adminuser);
+    $this->backdropLogin($this->adminuser);
     $edit = array(
       'format' => 'delimited',
     );
-    $this->drupalPost('de/node/' . $node->nid . '/webform-results/download', $edit, t('Download'));
+    $this->backdropPost('de/node/' . $node->nid . '/webform-results/download', $edit, t('Download'));
     // Previous form submission batch created the export file. Click the link
     // to access export file itself.
     $this->clickLink(t('download the file here'));
@@ -503,10 +503,10 @@ class WebformLocalizationApiTestCase extends WebformLocalizationWebTestCase {
     parent::setUp($added_modules);
 
     // Set "Webform" content type to use multilingual support with translation.
-    $this->drupalGet('admin/structure/types/manage/webform');
+    $this->backdropGet('admin/structure/types/manage/webform');
     $edit = array();
     $edit['language_content_type'] = 2;
-    $this->drupalPost('admin/structure/types/manage/webform', $edit, t('Save content type'));
+    $this->backdropPost('admin/structure/types/manage/webform', $edit, t('Save content type'));
     $this->assertRaw(t('The content type %type has been updated.', array('%type' => 'Webform')), 'Webform content type has been updated.');
   }
 
@@ -514,7 +514,7 @@ class WebformLocalizationApiTestCase extends WebformLocalizationWebTestCase {
    * Test submissions API function with webform localization presence.
    */
   function testWebformLocalizationApi() {
-    $this->drupalLogin($this->adminuser);
+    $this->backdropLogin($this->adminuser);
     $node = $this->createWebformForm();
     /**
      * Enables localization by string translation and reuse the single webform
@@ -523,7 +523,7 @@ class WebformLocalizationApiTestCase extends WebformLocalizationWebTestCase {
     $edit = array();
     $edit['expose_strings'] = TRUE;
     $edit['single_webform'] = TRUE;
-    $this->drupalPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
+    $this->backdropPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
     $this->assertRaw(t('The form settings have been updated.'), 'Webform string translation and single webform enabled.');
 
     module_load_include('inc', 'webform', 'includes/webform.submissions');

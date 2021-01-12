@@ -1,16 +1,9 @@
-; $Id: $
 name = Webform Localization
 description = Enables localization features to forms and questionnaires.
-core = 7.x
+backdrop = 1.x
+type = module
 package = Webform
-php = 5.3
-dependencies[] = locale
-dependencies[] = variable
+
 dependencies[] = i18n_translation
 dependencies[] = i18n_string
-dependencies[] = webform (4.x)
-test_dependencies[] = token
-test_dependencies[] = i18n_block
-
-files[] = tests/webform_localization.test
-files[] = tests/webform_localization.submission.test
+dependencies[] = webform

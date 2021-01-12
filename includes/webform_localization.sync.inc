@@ -38,7 +38,7 @@ function webform_localization_webform_properties_sync($nid) {
           foreach ($webform_localization_options['webform_properties'] as $property) {
             $webform[$property] = $origin[$property];
           }
-          drupal_write_record('webform', $webform, array('nid'));
+          backdrop_write_record('webform', $webform, array('nid'));
         }
       }
     }
@@ -127,8 +127,8 @@ function _webform_localization_emails_load($nid) {
   // Unserialize the exclude component list for e-mails.
   foreach ($emails as $eid => $email) {
     $emails[$eid]['excluded_components'] = array_filter(explode(',', $email['excluded_components']));
-    if (variable_get('webform_format_override', 0)) {
-      $emails[$eid]['html'] = variable_get('webform_default_format', 0);
+    if (config_get('webform.settings', 'webform_format_override')) {
+      $emails[$eid]['html'] = config_get('webform.settings', 'webform_default_format');
     }
   }
   return $emails;

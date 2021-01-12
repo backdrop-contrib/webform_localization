@@ -33,10 +33,10 @@ abstract class WebformLocalizationSubmissionTestCase extends WebformLocalization
     parent::setUp($modules);
 
     // Set "Webform" content type to use multilingual support with translation.
-    $this->drupalGet('admin/structure/types/manage/webform');
+    $this->backdropGet('admin/structure/types/manage/webform');
     $edit = array();
     $edit['language_content_type'] = 2;
-    $this->drupalPost('admin/structure/types/manage/webform', $edit, t('Save content type'));
+    $this->backdropPost('admin/structure/types/manage/webform', $edit, t('Save content type'));
     $this->assertRaw(t('The content type %type has been updated.', array('%type' => 'Webform')), 'Webform content type has been updated.');
 
   }
@@ -129,11 +129,11 @@ abstract class WebformLocalizationSubmissionTestCase extends WebformLocalization
 
     // Visit the node page with the "foo=bar" query, to test
     // [current-page:query:?] default values.
-    $this->drupalGet('node/' . $node->nid, array('query' => array('foo' => 'bar')));
+    $this->backdropGet('node/' . $node->nid, array('query' => array('foo' => 'bar')));
     $this->assertText($node->title, t('Webform node created and accessible at !url', array('!url' => 'node/' . $node->nid)), t('Webform'));
 
     // Submit our test data.
-    $this->drupalPost(NULL, $submission_values, 'Submit', array(), array(), 'webform-client-form-' . $node->nid);
+    $this->backdropPost(NULL, $submission_values, 'Submit', array(), array(), 'webform-client-form-' . $node->nid);
 
     // Confirm that the submission has been created.
     $webform = $this->createWebformForm()->webform;
@@ -145,7 +145,7 @@ abstract class WebformLocalizationSubmissionTestCase extends WebformLocalization
     $sid = $matches[1];
 
     // Pull in the database submission and check the values.
-    drupal_static_reset('webform_get_submission');
+    backdrop_static_reset('webform_get_submission');
     $actual_submission = webform_get_submission($node->nid, $sid);
 
     $component_info = $this->wtc->webformComponents();
@@ -199,7 +199,7 @@ class WebformLocalizationStringSubmissionTestCase extends WebformLocalizationSub
     $edit = array();
     $edit['expose_strings'] = 1;
     $edit['single_webform'] = 1;
-    $this->drupalPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
+    $this->backdropPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
     $this->assertRaw(t('The form settings have been updated.'), 'Webform string translation and single webform enabled.');
   }
 
@@ -242,7 +242,7 @@ class WebformLocalizationSyncSubmissionTestCase extends WebformLocalizationSubmi
     $edit['sync_roles'] = 1;
     $edit['sync_emails'] = 1;
 
-    $this->drupalPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
+    $this->backdropPost('node/' . $node->nid . '/webform/configure', $edit, t('Save configuration'));
     $this->assertRaw(t('The form settings have been updated.'), 'Webform string translation and single webform enabled.');
 
   }

@@ -43,7 +43,7 @@ function _webform_localization_translate_component(&$element, $component) {
         // the place where it is.
         list ($children, $property) = explode(']#', $name_list[3]);
         // Remove the '[' from the begining of the string.
-        $children = drupal_substr($children, 1);
+        $children = backdrop_substr($children, 1);
         $children_array = explode('][', $children);
         foreach ($children_array as $child) {
           if (isset($current_element[$child])) {
@@ -56,7 +56,7 @@ function _webform_localization_translate_component(&$element, $component) {
       }
       else {
         // Remove the '#' from the begining of the property, for consistency.
-        $property = drupal_substr($name_list[3], 1);
+        $property = backdrop_substr($name_list[3], 1);
       }
       if (strpos($property, '-') !== FALSE) {
         // If property is array, we extract the key from the property.
@@ -268,7 +268,7 @@ function webform_localization_delete_all_strings() {
     webform_localization_component_delete_translation_strings($component);
 
     $component['extra'] = serialize($component['extra']);
-    drupal_write_record('webform_component', $component, array('nid', 'cid'));
+    backdrop_write_record('webform_component', $component, array('nid', 'cid'));
   }
 }
 
@@ -302,7 +302,7 @@ function webform_localization_update_translation_strings($properties) {
         $confirmationOptions['format'] = $properties['confirmation']['format'];
       }
       else {
-        drupal_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
+        backdrop_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
           '@name' => $name,
           '@format' => $properties['confirmation']['format']
         )), 'warning', FALSE);
@@ -319,7 +319,7 @@ function webform_localization_update_translation_strings($properties) {
         $confirmationOptions['format'] = $properties['preview_message']['format'];
       }
       else {
-        drupal_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
+        backdrop_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
           '@name' => $name,
           '@format' => $properties['preview_message']['format']
         )), 'warning', FALSE);
@@ -359,7 +359,7 @@ function webform_localization_translate_strings(&$node, $update = FALSE) {
       $confirmationOptions['format'] = $node->webform['confirmation_format'];
     }
     else {
-      drupal_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
+      backdrop_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
         '@name' => $name,
         '@format' => $node->webform['confirmation_format']
       )), 'warning', FALSE);
@@ -374,7 +374,7 @@ function webform_localization_translate_strings(&$node, $update = FALSE) {
       $confirmationOptions['format'] = $node->webform['preview_message_format'];
     }
     else {
-      drupal_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
+      backdrop_set_message(t('The string @name could not be refreshed with the text format @format because it is not allowed for translation.', array(
         '@name' => $name,
         '@format' => $node->webform['preview_message_format']
       )), 'warning', FALSE);
@@ -524,7 +524,7 @@ function webform_localization_uuid_update_strings($disabling_uuid = FALSE) {
   $old_ids = db_query('SELECT distinct type FROM {i18n_string} WHERE textgroup = :webform', array(
     ':webform' => 'webform',
       ))->fetchCol();
-  variable_set('webform_localization_using_uuid', !$disabling_uuid);
+  state_set('webform_localization_using_uuid', !$disabling_uuid);
   if (empty($old_ids)) {
     return;
   }
