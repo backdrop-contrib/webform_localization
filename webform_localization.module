@@ -1299,8 +1299,10 @@ function webform_localization_preprocess_webform_components_form(&$variables) {
 function webform_localization_js_alter(&$javascript) {
   global $language;
 
-  // Only react on webform nodes.
-  if ($node = menu_get_object()) {
+  // Only react on webform nodes and when layout module enabled.
+  // (Can give fatal error of undefined function layout_load_multiple_by_path()
+  // when running an upgrade.)
+  if (function_exists('layout_load') && $node = menu_get_object()) {
     if (isset($node->type) && in_array($node->type, webform_node_types())) {
       // Only react when we are not on the source node.
       if ($node->nid != $node->tnid && $node->tnid > 0) {
