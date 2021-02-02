@@ -17,6 +17,7 @@
  *   The translated option string, if found.
  */
 function webform_localization_translate_select_option($component, $option) {
+  module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
   // Find the source for data value and translate it.
   $item_key_lookup = _webform_localization_string_to_key($component['extra']['items']);
   foreach ($component['extra']['translated_strings'] as $name) {
@@ -83,6 +84,7 @@ function _webform_localization_analysis_data_select($data, $node, $component) {
   if (!isset($component['extra']['translated_strings']) || !is_array($component['extra']['translated_strings'])) {
     return $data;
   }
+  module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
   $item_key_lookup = _webform_localization_string_to_key($component['extra']['items']);
   foreach ($component['extra']['translated_strings'] as $name) {
     $name_list = explode(':', $name);
