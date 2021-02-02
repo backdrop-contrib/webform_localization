@@ -28,6 +28,7 @@ function _webform_localization_analysis_data_grid($data, $node, $component) {
   if (!isset($component['extra']['translated_strings']) || !is_array($component['extra']['translated_strings'])) {
     return $data;
   }
+  module_load_include('inc', 'webform_localization', 'includes/webform_localization.i18n');
   $options_key_lookup = _webform_localization_string_to_key($component['extra']['options']);
   $questions_key_lookup = _webform_localization_string_to_key($component['extra']['questions']);
 
