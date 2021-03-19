@@ -206,7 +206,7 @@ class WebformLocalizationWebTestCase extends backdropWebTestCase {
     $langcode = $language;
     $body_key = "body[" . LANGUAGE_NONE . "][0][value]";
     //$this->assertFieldByXPath('//input[@id="edit-title"]', $node->title, "Original title value correctly populated.");
-    //$this->assertFieldByXPath("//textarea[@name='$body_key']", $node->body[$node->language][0]['value'], "Original body value correctly populated.");
+    //$this->assertFieldByXPath("//textarea[@name='$body_key']", $node->body[$node->langcode][0]['value'], "Original body value correctly populated.");
 
     $edit = array();
     $edit["title"] = $title;
