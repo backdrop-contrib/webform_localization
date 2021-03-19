@@ -176,7 +176,7 @@ function webform_localization_webform_component_insert($component) {
     $node = node_load($component['nid']);
     $translations = translation_node_get_translations($node->tnid);
     if ($translations) {
-      unset($translations[$node->language]);
+      unset($translations[$node->langcode]);
       foreach ($translations as $trans_c) {
         $new_component = $component;
         $new_component['nid'] = $trans_c->nid;
@@ -259,7 +259,7 @@ function webform_localization_webform_component_delete($component) {
     $node = node_load($component['nid']);
     $translations = translation_node_get_translations($node->tnid);
     if ($translations) {
-      unset($translations[$node->language]);
+      unset($translations[$node->langcode]);
       foreach ($translations as $trans_c) {
         $component_version = webform_localization_component_load($trans_c->nid, $component['cid']);
         webform_component_delete($trans_c, $component_version);
@@ -362,7 +362,7 @@ function webform_localization_webform_submission_insert($node, $submission) {
   // NOTE:
   // We have 2 options here: to use the node language or the language of
   // the page... for now make more sense use the node as language source.
-  $language = $node->language;
+  $language = $node->langcode;
   // Update language field when a submission is updated.
   db_update('webform_submissions')
       ->fields(array(
